@@ -12,6 +12,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.setPadding
+import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.viewModels
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -67,9 +68,9 @@ class SettingsFragment : BaseFragment() {
         binding.fabSave.setOnClickListener {
             viewModel.save(values) { error ->
                 if (error == null) {
-                    binding.root.snack(getString(R.string.operation_success), Snackbar.LENGTH_LONG)
+                    Snackbar.make(binding.root, getString(R.string.operation_success), Snackbar.LENGTH_LONG).show()
                     viewModel.lastSave.value?.warnings?.takeIf { it.isNotEmpty() }?.let { warnings ->
-                        binding.root.snack(warnings.joinToString("\n"), Snackbar.LENGTH_INDEFINITE)
+                        Snackbar.make(binding.root, warnings.joinToString("\n"), Snackbar.LENGTH_INDEFINITE).show()
                     }
                 } else binding.root.snack(error)
             }
@@ -129,13 +130,19 @@ class SettingsFragment : BaseFragment() {
             }
             column.addView(TextView(requireContext()).apply {
                 text = category.label
-                textAppearance = com.google.android.material.R.style.TextAppearance_Material3_TitleMedium
+                TextViewCompat.setTextAppearance(
+                    this,
+                    com.google.android.material.R.style.TextAppearance_Material3_TitleMedium
+                )
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
             })
             if (category.description.isNotBlank()) {
                 column.addView(TextView(requireContext()).apply {
                     text = category.description
-                    textAppearance = com.google.android.material.R.style.TextAppearance_Material3_BodySmall
+                    TextViewCompat.setTextAppearance(
+                        this,
+                        com.google.android.material.R.style.TextAppearance_Material3_BodySmall
+                    )
                     setTextColor(context.getColor(R.color.brand_400))
                 })
             }
@@ -203,7 +210,10 @@ class SettingsFragment : BaseFragment() {
         if (field.type == "html") {
             return TextView(requireContext()).apply {
                 text = Html.fromHtml(field.description.ifBlank { field.label }, Html.FROM_HTML_MODE_COMPACT)
-                textAppearance = com.google.android.material.R.style.TextAppearance_Material3_BodyMedium
+                TextViewCompat.setTextAppearance(
+                    this,
+                    com.google.android.material.R.style.TextAppearance_Material3_BodyMedium
+                )
                 layoutParams = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
