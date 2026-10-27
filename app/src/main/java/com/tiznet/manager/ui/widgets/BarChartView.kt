@@ -47,7 +47,7 @@ class BarChartView @JvmOverloads constructor(
         val pad = 8f
         val w = width - pad * 2
         val h = height - pad * 2
-        val maxBytes = (usage.maxOrNull() ?: 1L).coAtLeast(1L)
+        val maxBytes = (usage.maxOrNull() ?: 1L).coerceAtLeast(1L)
         val maxOnline = (online.maxOrNull() ?: 1).coerceAtLeast(1)
         val slot = w / usage.size
         val barWidth = slot * 0.55f

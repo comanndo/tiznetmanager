@@ -15,7 +15,7 @@ import com.tiznet.manager.databinding.FragmentOutboundsBinding
 import com.tiznet.manager.ui.common.BaseFragment
 import com.tiznet.manager.ui.common.StateView
 import com.tiznet.manager.ui.common.UiState
-import com.tiznet.manager.util.hide
+import com.tiznet.manager.util.visible
 import com.tiznet.manager.util.snack
 
 class OutboundsFragment : BaseFragment() {
@@ -107,7 +107,7 @@ class OutboundsFragment : BaseFragment() {
         val isCustom = existing?.mode in listOf("core_outbound", "core_endpoint", "xray_outbound")
         db.configLayout.visibility = if (isCustom) View.VISIBLE else View.GONE
         db.dropdownMode.setOnItemClickListener { _, _, position, _ ->
-            db.configLayout.hide(position !in 6..8)
+            db.configLayout.visible(position in 6..8)
         }
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(if (existing == null) R.string.outbounds_add else R.string.action_edit)
