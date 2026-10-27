@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/dashboardFragment"
+        android:icon="@drawable/ic_dashboard"
+        android:title="@string/nav_dashboard" />
+    <item
+        android:id="@+id/usersFragment"
+        android:icon="@drawable/ic_people"
+        android:title="@string/nav_users" />
+    <item
+        android:id="@+id/nodesFragment"
+        android:icon="@drawable/ic_dns"
+        android:title="@string/nav_nodes" />
+    <item
+        android:id="@+id/protocolsFragment"
+        android:icon="@drawable/ic_vpn_key"
+        android:title="@string/nav_protocols" />
+    <item
+        android:id="@+id/panelsFragment"
+        android:icon="@drawable/ic_layers"
+        android:title="@string/nav_panels" />
+</menu>

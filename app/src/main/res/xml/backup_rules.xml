@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Never export the encrypted credential database to cloud backup. -->
+    <exclude domain="database" path="tiznet.db" />
+    <exclude domain="sharedpref" path="auth.xml" />
+</full-backup-content>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/stateContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <ProgressBar
+        android:id="@+id/stateProgress"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:indeterminateTint="?attr/colorPrimary" />
+
+    <TextView
+        android:id="@+id/stateLoadingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/state_loading"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurfaceVariant" />
+
+    <ImageView
+        android:id="@+id/stateErrorIcon"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:background="@drawable/bg_icon_circle"
+        android:padding="16dp"
+        android:src="@drawable/ic_warning"
+        android:visibility="gone"
+        app:tint="?attr/colorPrimary"
+        android:contentDescription="@string/state_error" />
+
+    <TextView
+        android:id="@+id/stateErrorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/stateRetry"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/action_retry"
+        android:visibility="gone"
+        app:icon="@drawable/ic_refresh" />
+
+    <ImageView
+        android:id="@+id/stateEmptyIcon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:alpha="0.55"
+        android:src="@drawable/ic_inbox"
+        android:visibility="gone"
+        app:tint="?attr/colorOutline"
+        android:contentDescription="@string/state_empty" />
+
+    <TextView
+        android:id="@+id/stateEmptyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:text="@string/state_empty"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?attr/colorOutline"
+        android:visibility="gone" />
+</LinearLayout>
