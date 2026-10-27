@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.tiznet.manager.ui.login.LoginFragment"
+        tools:layout="@layout/fragment_login" />
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.tiznet.manager.ui.dashboard.DashboardFragment"
+        tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
+        android:id="@+id/usersFragment"
+        android:name="com.tiznet.manager.ui.users.UsersFragment"
+        tools:layout="@layout/fragment_users">
+        <action
+            android:id="@+id/action_users_to_detail"
+            app:destination="@id/userDetailFragment" />
+        <action
+            android:id="@+id/action_users_to_edit"
+            app:destination="@id/userEditFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/userDetailFragment"
+        android:name="com.tiznet.manager.ui.users.UserDetailFragment"
+        tools:layout="@layout/fragment_user_detail">
+        <argument android:name="uuid" app:argType="string" />
+        <action
+            android:id="@+id/action_detail_to_edit"
+            app:destination="@id/userEditFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/userEditFragment"
+        android:name="com.tiznet.manager.ui.users.UserEditFragment"
+        tools:layout="@layout/fragment_user_edit">
+        <argument
+            android:name="uuid"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="bulk"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/adminsFragment"
+        android:name="com.tiznet.manager.ui.admins.AdminsFragment"
+        tools:layout="@layout/fragment_admins" />
+
+    <fragment
+        android:id="@+id/nodesFragment"
+        android:name="com.tiznet.manager.ui.nodes.NodesFragment"
+        tools:layout="@layout/fragment_nodes" />
+
+    <fragment
+        android:id="@+id/domainsFragment"
+        android:name="com.tiznet.manager.ui.domains.DomainsFragment"
+        tools:layout="@layout/fragment_domains" />
+
+    <fragment
+        android:id="@+id/outboundsFragment"
+        android:name="com.tiznet.manager.ui.outbounds.OutboundsFragment"
+        tools:layout="@layout/fragment_outbounds" />
+
+    <fragment
+        android:id="@+id/protocolsFragment"
+        android:name="com.tiznet.manager.ui.protocols.ProtocolsFragment"
+        tools:layout="@layout/fragment_protocols" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.tiznet.manager.ui.settings.SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/applyFragment"
+        android:name="com.tiznet.manager.ui.apply.ApplyFragment"
+        tools:layout="@layout/fragment_apply" />
+
+    <fragment
+        android:id="@+id/backupFragment"
+        android:name="com.tiznet.manager.ui.backup.BackupFragment"
+        tools:layout="@layout/fragment_backup" />
+
+    <fragment
+        android:id="@+id/logsFragment"
+        android:name="com.tiznet.manager.ui.logs.LogsFragment"
+        tools:layout="@layout/fragment_logs" />
+
+    <fragment
+        android:id="@+id/broadcastFragment"
+        android:name="com.tiznet.manager.ui.broadcast.BroadcastFragment"
+        tools:layout="@layout/fragment_broadcast" />
+
+    <fragment
+        android:id="@+id/cleanIpFragment"
+        android:name="com.tiznet.manager.ui.cleanip.CleanIpFragment"
+        tools:layout="@layout/fragment_clean_ip" />
+
+    <fragment
+        android:id="@+id/tagsFragment"
+        android:name="com.tiznet.manager.ui.tags.TagsFragment"
+        tools:layout="@layout/fragment_tags" />
+
+    <fragment
+        android:id="@+id/panelsFragment"
+        android:name="com.tiznet.manager.ui.panels.PanelsFragment"
+        tools:layout="@layout/fragment_panels" />
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.tiznet.manager.ui.about.AboutFragment"
+        tools:layout="@layout/fragment_about" />
+
+    <action
+        android:id="@+id/action_global_login"
+        app:destination="@id/loginFragment"
+        app:popUpTo="@id/nav_graph"
+        app:popUpToInclusive="true" />
+</navigation>

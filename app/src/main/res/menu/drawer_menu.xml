@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/dashboardFragment" android:icon="@drawable/ic_dashboard" android:title="@string/nav_dashboard" />
+        <item android:id="@+id/usersFragment" android:icon="@drawable/ic_people" android:title="@string/nav_users" />
+        <item android:id="@+id/adminsFragment" android:icon="@drawable/ic_shield" android:title="@string/nav_admins" />
+        <item android:id="@+id/nodesFragment" android:icon="@drawable/ic_dns" android:title="@string/nav_nodes" />
+        <item android:id="@+id/domainsFragment" android:icon="@drawable/ic_globe" android:title="@string/nav_domains" />
+        <item android:id="@+id/outboundsFragment" android:icon="@drawable/ic_swap" android:title="@string/nav_outbounds" />
+        <item android:id="@+id/protocolsFragment" android:icon="@drawable/ic_vpn_key" android:title="@string/nav_protocols" />
+        <item android:id="@+id/tagsFragment" android:icon="@drawable/ic_tag" android:title="@string/nav_tags" />
+    </group>
+    <item android:title="@string/nav_server_status">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/settingsFragment" android:icon="@drawable/ic_settings" android:title="@string/nav_settings" />
+                <item android:id="@+id/applyFragment" android:icon="@drawable/ic_bolt" android:title="@string/nav_apply" />
+                <item android:id="@+id/backupFragment" android:icon="@drawable/ic_cloud" android:title="@string/nav_backup" />
+                <item android:id="@+id/logsFragment" android:icon="@drawable/ic_article" android:title="@string/nav_logs" />
+                <item android:id="@+id/broadcastFragment" android:icon="@drawable/ic_campaign" android:title="@string/nav_broadcast" />
+                <item android:id="@+id/cleanIpFragment" android:icon="@drawable/ic_clean" android:title="@string/nav_clean_ip" />
+            </group>
+        </menu>
+    </item>
+    <group>
+        <item android:id="@+id/panelsFragment" android:icon="@drawable/ic_layers" android:title="@string/nav_panels" />
+        <item android:id="@+id/aboutFragment" android:icon="@drawable/ic_info" android:title="@string/nav_about" />
+        <item android:id="@+id/action_disconnect" android:icon="@drawable/ic_logout" android:title="@string/action_disconnect" />
+    </group>
+</menu>

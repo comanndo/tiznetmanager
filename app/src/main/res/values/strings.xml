@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TizNet Manager</string>
+    <string name="app_name_fa">مدیر تیزنت</string>
+    <string name="app_tagline">مدیریت حرفه‌ای پنل هیدیفای</string>
+    <string name="supported_versions">پشتیبانی از هیدیفای نسخه ۱۱ تا ۱۴</string>
+
+    <!-- Common -->
+    <string name="action_save">ذخیره</string>
+    <string name="action_cancel">انصراف</string>
+    <string name="action_apply">اعمال</string>
+    <string name="action_delete">حذف</string>
+    <string name="action_edit">ویرایش</string>
+    <string name="action_add">افزودن</string>
+    <string name="action_create">ایجاد</string>
+    <string name="action_close">بستن</string>
+    <string name="action_confirm">تایید</string>
+    <string name="action_retry">تلاش دوباره</string>
+    <string name="action_share">اشتراک‌گذاری</string>
+    <string name="action_copy">کپی</string>
+    <string name="action_copied">کپی شد</string>
+    <string name="action_search">جستجو</string>
+    <string name="action_refresh">بازخوانی</string>
+    <string name="action_back">بازگشت</string>
+    <string name="action_more">بیشتر</string>
+    <string name="action_next">بعدی</string>
+    <string name="action_enable">فعال</string>
+    <string name="action_disable">غیرفعال</string>
+    <string name="action_yes">بله</string>
+    <string name="action_no">خیر</string>
+    <string name="action_download">دانلود</string>
+    <string name="action_upload">آپلود</string>
+    <string name="action_test">تست</string>
+    <string name="action_view">مشاهده</string>
+    <string name="action_select_all">انتخاب همه</string>
+    <string name="action_clear_selection">لغو انتخاب</string>
+    <string name="action_open_panel">باز کردن پنل</string>
+    <string name="action_disconnect">قطع اتصال</string>
+
+    <!-- States -->
+    <string name="state_loading">در حال بارگذاری…</string>
+    <string name="state_empty">موردی یافت نشد</string>
+    <string name="state_error">خطایی رخ داد</string>
+    <string name="state_no_network">اتصال اینترنت برقرار نیست</string>
+    <string name="state_unauthorized">نام کاربری یا رمز عبور اشتباه است</string>
+    <string name="state_forbidden">شما به این بخش دسترسی ندارید</string>
+    <string name="state_not_found">موردی روی سرور پیدا نشد</string>
+    <string name="state_server_error">خطای داخلی سرور</string>
+    <string name="state_unknown_error">خطای ناشناخته</string>
+    <string name="state_pull_refresh">برای بازخوانی بکشید</string>
+
+    <!-- Navigation / sections -->
+    <string name="nav_dashboard">داشبورد</string>
+    <string name="nav_users">کاربران</string>
+    <string name="nav_admins">ادمین‌ها</string>
+    <string name="nav_nodes">نودها</string>
+    <string name="nav_domains">دامنه‌ها</string>
+    <string name="nav_outbounds">خروجی‌ها</string>
+    <string name="nav_protocols">پروتکل‌ها</string>
+    <string name="nav_settings">تنظیمات</string>
+    <string name="nav_apply">اعمال تغییرات</string>
+    <string name="nav_backup">پشتیبان‌گیری</string>
+    <string name="nav_logs">لاگ‌ها</string>
+    <string name="nav_broadcast">پیام همگانی</string>
+    <string name="nav_clean_ip">آی‌پی تمیز</string>
+    <string name="nav_tags">برچسب‌ها</string>
+    <string name="nav_panels">پنل‌های من</string>
+    <string name="nav_about">درباره برنامه</string>
+    <string name="nav_server_status">وضعیت سرور</string>
+    <string name="nav_config_tester">تستر کانفیگ</string>
+
+    <!-- Login -->
+    <string name="login_welcome">به تیزنت خوش آمدید</string>
+    <string name="login_subtitle">پنل هیدیفای خود را اضافه کنید تا همه بخش‌ها را از گوشی مدیریت کنید</string>
+    <string name="login_panel_name">نام پنل (دلخواه)</string>
+    <string name="login_panel_url">آدرس پنل</string>
+    <string name="login_panel_url_hint">https://panel.example.com:Port</string>
+    <string name="login_proxy_path">مسیر ادمین (Proxy Path)</string>
+    <string name="login_proxy_path_hint">مثلاً d7x9k2 یا خالی برای تشخیص خودکار</string>
+    <string name="login_username">نام کاربری / یو‌آی‌دی ادمین</string>
+    <string name="login_password">رمز عبور</string>
+    <string name="login_password_empty_hint">اگر رمز ندارید خالی بگذارید</string>
+    <string name="login_connect">اتصال و ذخیره</string>
+    <string name="login_testing">در حال بررسی اتصال…</string>
+    <string name="login_invalid_url">آدرس پنل معتبر نیست</string>
+    <string name="login_success">اتصال برقرار شد</string>
+    <string name="login_saved_panels">پنل‌های ذخیره‌شده</string>
+    <string name="login_no_panels">هنوز پنلی اضافه نشده است</string>
+    <string name="login_auto_detect">تشخیص خودکار مسیر</string>
+
+    <!-- Dashboard -->
+    <string name="dash_users_total">کل کاربران</string>
+    <string name="dash_users_active">کاربران فعال</string>
+    <string name="dash_users_online">آنلاین (۲۴ ساعت)</string>
+    <string name="dash_usage_today">مصرف امروز</string>
+    <string name="dash_usage_week">مصرف هفته</string>
+    <string name="dash_usage_month">مصرف ماه</string>
+    <string name="dash_usage_total">کل مصرف</string>
+    <string name="dash_system">منابع سیستم</string>
+    <string name="dash_cpu">پردازنده</string>
+    <string name="dash_memory">حافظه رم</string>
+    <string name="dash_disk">دیسک</string>
+    <string name="dash_network">شبکه</string>
+    <string name="dash_uptime">روشن بودن سرور</string>
+    <string name="dash_panel_version">نسخه پنل</string>
+    <string name="dash_usage_chart">نمودار مصرف و کاربران آنلاین</string>
+    <string name="dash_range">بازه زمانی</string>
+    <string name="dash_nodes">نودها</string>
+    <string name="dash_processes">پرمصرف‌ترین پردازش‌ها</string>
+    <string name="dash_sent">ارسال</string>
+    <string name="dash_recv">دریافت</string>
+    <string name="dash_connections">اتصالات</string>
+    <string name="dash_unique_ips">آی‌پی یکتا</string>
+
+    <!-- Users -->
+    <string name="users_title">مدیریت کاربران</string>
+    <string name="users_search_hint">جستجو با نام یا یو‌آی‌دی…</string>
+    <string name="users_add">کاربر جدید</string>
+    <string name="users_bulk_create">ساخت دسته‌ای</string>
+    <string name="users_filter_all">همه</string>
+    <string name="users_filter_active">فعال</string>
+    <string name="users_filter_disabled">غیرفعال</string>
+    <string name="users_filter_expired">منقضی</string>
+    <string name="users_filter_no_data">تمام‌شده</string>
+    <string name="users_count">%1$d کاربر</string>
+    <string name="users_selected">%1$d انتخاب‌شده</string>
+    <string name="users_bulk_enable">فعال‌سازی گروهی</string>
+    <string name="users_bulk_disable">غیرفعال‌سازی گروهی</string>
+    <string name="users_bulk_delete">حذف گروهی</string>
+    <string name="users_bulk_reset_usage">صفر کردن مصرف</string>
+    <string name="users_bulk_reset_days">ریست روزها</string>
+    <string name="users_bulk_add_days">افزودن روز</string>
+    <string name="users_bulk_add_limit">افزودن حجم</string>
+    <string name="users_confirm_delete">آیا از حذف این کاربر مطمئن هستید؟</string>
+    <string name="users_confirm_bulk_delete">حذف %1$d کاربر؟ این عمل قابل بازگشت نیست.</string>
+
+    <!-- User editor -->
+    <string name="user_edit_new">کاربر جدید</string>
+    <string name="user_edit_title">ویرایش کاربر</string>
+    <string name="user_name">نام</string>
+    <string name="user_comment">توضیحات</string>
+    <string name="user_uuid">یو‌آی‌دی (UUID)</string>
+    <string name="user_uuid_hint">در صورت خالی بودن، خودکار ساخته می‌شود</string>
+    <string name="user_enabled">کاربر فعال باشد</string>
+    <string name="user_usage_limit">حجم مجاز (GB)</string>
+    <string name="user_package_days">مدت بسته (روز)</string>
+    <string name="user_mode">نوع ریست</string>
+    <string name="user_mode_no_reset">بدون ریست</string>
+    <string name="user_mode_monthly">ماهانه</string>
+    <string name="user_mode_weekly">هفتگی</string>
+    <string name="user_mode_daily">روزانه</string>
+    <string name="user_telegram_id">آیدی تلگرام</string>
+    <string name="user_outbound">خروجی ترجیحی</string>
+    <string name="user_outbound_auto">خودکار</string>
+    <string name="user_tags">برچسب‌ها</string>
+    <string name="user_reset_usage">صفر کردن مصرف هنگام ذخیره</string>
+    <string name="user_reset_days">ریست روزها هنگام ذخیره</string>
+    <string name="user_bulk_count">تعداد کاربران</string>
+    <string name="user_bulk_prefix">پیشوند نام</string>
+    <string name="user_extra_params">پارامترهای اضافه (JSON)</string>
+
+    <!-- User detail -->
+    <string name="user_detail_status">وضعیت</string>
+    <string name="user_detail_usage">مصرف فعلی</string>
+    <string name="user_detail_remaining_days">روزهای باقی‌مانده</string>
+    <string name="user_detail_expire">تاریخ انقضا</string>
+    <string name="user_detail_start">تاریخ شروع</string>
+    <string name="user_detail_last_online">آخرین بازدید</string>
+    <string name="user_detail_last_reset">آخرین ریست</string>
+    <string name="user_detail_days_to_reset">روز تا ریست بعدی</string>
+    <string name="user_detail_owner">ادمین مالک</string>
+    <string name="user_detail_sub_link">لینک اشتراک</string>
+    <string name="user_detail_qr">کیو‌آر کد اشتراک</string>
+    <string name="user_unlimited">نامحدود</string>
+    <string name="user_never">هرگز</string>
+    <string name="user_not_started">شروع نشده</string>
+
+    <!-- Statuses -->
+    <string name="status_active">فعال</string>
+    <string name="status_disabled">غیرفعال</string>
+    <string name="status_expired">منقضی شده</string>
+    <string name="status_no_data">حجم تمام شده</string>
+    <string name="status_online">آنلاین</string>
+    <string name="status_offline">آفلاین</string>
+    <string name="status_late">با تاخیر</string>
+    <string name="status_never">گزارش نداده</string>
+
+    <!-- Admins -->
+    <string name="admins_title">ادمین‌ها</string>
+    <string name="admins_add">ادمین جدید</string>
+    <string name="admins_mode_super">ادمین کل</string>
+    <string name="admins_mode_admin">ادمین</string>
+    <string name="admins_mode_agent">نماینده</string>
+    <string name="admins_alias">نام کاربری ورود (Alias)</string>
+    <string name="admins_password">رمز عبور</string>
+    <string name="admins_capabilities">دسترسی‌ها</string>
+    <string name="admins_cap_add_sub">افزودن زیرادمین</string>
+    <string name="admins_cap_outbound">تغییر خروجی ترجیحی</string>
+    <string name="admins_cap_sublinks">لینک‌های اشتراک اضافه</string>
+    <string name="admins_cap_user_extra">ویرایش پارامتر کاربران</string>
+    <string name="admins_cap_domains">مدیریت دامنه‌ها</string>
+    <string name="admins_cap_outbounds">مدیریت خروجی‌ها</string>
+    <string name="admins_limits">محدودیت‌ها</string>
+    <string name="admins_max_users">حداکثر کاربر</string>
+    <string name="admins_max_active">حداکثر کاربر فعال</string>
+    <string name="admins_max_online">حداکثر آنلاین</string>
+    <string name="admins_max_usage">حداکثر ترافیک کل (GB)</string>
+    <string name="admins_link">لینک ورود ادمین</string>
+    <string name="admins_my_account">حساب کاربری من</string>
+    <string name="admins_change_password">تغییر رمز عبور</string>
+    <string name="admins_sub_count">زیرادمین‌ها: %1$d</string>
+
+    <!-- Nodes -->
+    <string name="nodes_title">نودها</string>
+    <string name="nodes_add">افزودن نود</string>
+    <string name="nodes_host">آدرس / هاست</string>
+    <string name="nodes_name">نام نود</string>
+    <string name="nodes_ping">پینگ</string>
+    <string name="nodes_sync">همگام‌سازی</string>
+    <string name="nodes_sync_status">وضعیت همگام‌سازی</string>
+    <string name="nodes_last_seen">آخرین مشاهده</string>
+    <string name="nodes_today_usage">مصرف امروز</string>
+    <string name="nodes_register_link">لینک ثبت نود</string>
+    <string name="nodes_ms">%1$d میلی‌ثانیه</string>
+    <string name="nodes_unreachable">در دسترس نیست</string>
+
+    <!-- Domains -->
+    <string name="domains_title">دامنه‌ها</string>
+    <string name="domains_add">دامنه جدید</string>
+    <string name="domains_domain">دامنه</string>
+    <string name="domains_alias">نام نمایشی</string>
+    <string name="domains_mode">نوع دامنه</string>
+    <string name="domains_tls">حالت TLS</string>
+    <string name="domains_cdn_ip">آی‌پی CDN</string>
+    <string name="domains_detect">تشخیص دامنه</string>
+    <string name="domains_port_check">بررسی پورت</string>
+    <string name="domains_cert_expire">انقضای گواهی</string>
+    <string name="domains_panel_link">لینک پنل روی دامنه</string>
+    <string name="domains_mode_direct">مستقیم</string>
+    <string name="domains_mode_cdn">CDN</string>
+    <string name="domains_mode_relay">ریلی</string>
+    <string name="domains_mode_worker">ورکر</string>
+    <string name="domains_mode_sublink">فقط لینک اشتراک</string>
+    <string name="tls_valid">معتبر</string>
+    <string name="tls_self_signed">خودامضا</string>
+    <string name="tls_expired">منقضی</string>
+    <string name="tls_invalid">نامعتبر</string>
+    <string name="tls_missing">بدون گواهی</string>
+
+    <!-- Outbounds -->
+    <string name="outbounds_title">خروجی‌ها</string>
+    <string name="outbounds_add">خروجی جدید</string>
+    <string name="outbounds_mode_warp">WARP</string>
+    <string name="outbounds_mode_psiphon">سایفون</string>
+    <string name="outbounds_mode_direct">مستقیم</string>
+    <string name="outbounds_mode_socks">SOCKS</string>
+    <string name="outbounds_mode_tor">Tor</string>
+    <string name="outbounds_mode_block">مسدود</string>
+    <string name="outbounds_mode_core">کانفیگ هسته (سفارشی)</string>
+    <string name="outbounds_mode_xray">خروجی Xray (سفارشی)</string>
+    <string name="outbounds_host">هاست</string>
+    <string name="outbounds_port">پورت</string>
+    <string name="outbounds_username">نام کاربری</string>
+    <string name="outbounds_password">رمز عبور</string>
+    <string name="outbounds_config">کانفیگ JSON</string>
+    <string name="outbounds_default">خروجی پیش‌فرض</string>
+    <string name="outbounds_make_default">تنظیم به‌عنوان پیش‌فرض</string>
+    <string name="outbounds_reorder">جابجایی با فلش‌ها</string>
+    <string name="outbounds_reset">بازنشانی به پیش‌فرض</string>
+
+    <!-- Protocols -->
+    <string name="protocols_title">پروتکل‌ها</string>
+    <string name="protocols_subtitle">فعال/غیرفعال کردن پروتکل‌های پنل</string>
+    <string name="protocols_needs_apply">برای اعمال، از بخش «اعمال تغییرات» اقدام کنید</string>
+
+    <!-- Settings -->
+    <string name="settings_title">تنظیمات پنل</string>
+    <string name="settings_advanced">تنظیمات پیشرفته</string>
+    <string name="settings_show_advanced">نمایش تنظیمات پیشرفته</string>
+    <string name="settings_changed">%1$d تنظیم تغییر کرد</string>
+    <string name="settings_warnings">هشدارها</string>
+    <string name="settings_restart_required">نیازمند راه‌اندازی مجدد</string>
+    <string name="settings_reinstall_required">نیازمند نصب مجدد</string>
+    <string name="settings_search_hint">جستجو در تنظیمات…</string>
+
+    <!-- Apply -->
+    <string name="apply_title">اعمال تغییرات</string>
+    <string name="apply_action_apply">اعمال کانفیگ</string>
+    <string name="apply_action_install">نصب</string>
+    <string name="apply_action_update">به‌روزرسانی</string>
+    <string name="apply_action_restart">ری‌استارت</string>
+    <string name="apply_action_status">وضعیت</string>
+    <string name="apply_running">در حال اجرا…</string>
+    <string name="apply_log">لاگ زنده</string>
+    <string name="apply_clear_log">پاک کردن لاگ</string>
+    <string name="apply_last_run">آخرین اجرا</string>
+    <string name="apply_finished">با موفقیت تمام شد</string>
+
+    <!-- Backup -->
+    <string name="backup_title">پشتیبان‌گیری و بازیابی</string>
+    <string name="backup_create">ساخت بکاپ جدید</string>
+    <string name="backup_restore">بازیابی</string>
+    <string name="backup_download">دانلود بکاپ</string>
+    <string name="backup_upload">آپلود فایل بکاپ</string>
+    <string name="backup_telegram">ارسال به تلگرام</string>
+    <string name="backup_files">بکاپ‌های روی سرور</string>
+    <string name="backup_options_settings">تنظیمات</string>
+    <string name="backup_options_users">کاربران</string>
+    <string name="backup_options_domains">دامنه‌ها</string>
+    <string name="backup_options_owner">جایگزینی ادمین مالک</string>
+    <string name="backup_confirm_restore">بازیابی جایگزین داده‌های فعلی می‌شود. ادامه می‌دهید؟</string>
+    <string name="backup_counts">کاربر: %1$d · ادمین: %2$d · دامنه: %3$d · نود: %4$d</string>
+
+    <!-- Logs -->
+    <string name="logs_title">فایل‌های لاگ</string>
+    <string name="logs_empty">لاگی وجود ندارد</string>
+
+    <!-- Broadcast -->
+    <string name="broadcast_title">پیام همگانی تلگرام</string>
+    <string name="broadcast_audience">مخاطبان</string>
+    <string name="audience_all">همه</string>
+    <string name="audience_active">فعال</string>
+    <string name="audience_expired">منقضی</string>
+    <string name="audience_offline_1h">آفلاین بیش از ۱ ساعت</string>
+    <string name="audience_offline_1d">آفلاین بیش از ۱ روز</string>
+    <string name="audience_offline_1w">آفلاین بیش از ۱ هفته</string>
+    <string name="audience_selected">انتخابی</string>
+    <string name="broadcast_text">متن پیام</string>
+    <string name="broadcast_format">قالب پیام</string>
+    <string name="broadcast_send">ارسال</string>
+    <string name="broadcast_bot_off">ربات تلگرام روی این پنل فعال نیست</string>
+    <string name="broadcast_progress">ارسال‌شده: %1$d از %2$d</string>
+
+    <!-- Clean IP -->
+    <string name="cleanip_title">آی‌پی تمیز و Reality</string>
+    <string name="cleanip_scan_ip">اسکن آی‌پی</string>
+    <string name="cleanip_scan_sni">اسکن SNI</string>
+    <string name="cleanip_reality">تنظیمات Reality</string>
+    <string name="cleanip_run">اجرای اسکن</string>
+
+    <!-- Tags -->
+    <string name="tags_title">برچسب‌ها</string>
+    <string name="tags_add">برچسب جدید</string>
+    <string name="tags_name">نام برچسب</string>
+    <string name="tags_color">رنگ</string>
+    <string name="tags_count">%1$d مورد</string>
+    <string name="tags_confirm_delete">حذف این برچسب؟</string>
+
+    <!-- Panels -->
+    <string name="panels_title">پنل‌های من</string>
+    <string name="panels_add">افزودن پنل جدید</string>
+    <string name="panels_edit">ویرایش پنل</string>
+    <string name="panels_delete">حذف پنل</string>
+    <string name="panels_confirm_delete">پنل و اطلاعات ذخیره‌شده آن حذف می‌شود</string>
+    <string name="panels_active">پنل فعال</string>
+    <string name="panels_switch">سوییچ به این پنل</string>
+    <string name="panels_kept_locally">اطلاعات پنل فقط روی همین دستگاه و به‌صورت رمزنگاری‌شده نگهداری می‌شود</string>
+
+    <!-- About -->
+    <string name="about_title">درباره</string>
+    <string name="about_app">TizNet Manager</string>
+    <string name="about_version">نسخه %1$s</string>
+    <string name="about_desc">اپلیکیشن غیررسمی مدیریت پنل هیدیفای با پشتیبانی کامل از نسخه‌های ۱۱ تا ۱۴</string>
+    <string name="about_hiddify_trademark">هیدیفای نام تجاری سازنده مربوطه است</string>
+    <string name="about_theme_picker">پوسته برنامه</string>
+    <string name="theme_system">سیستم</string>
+    <string name="theme_light">روشن</string>
+    <string name="theme_dark">تیره</string>
+    <string name="about_dynamic_color">رنگ داینامیک (اندروید ۱۲+)</string>
+
+    <!-- Misc -->
+    <string name="gb">GB</string>
+    <string name="mb">MB</string>
+    <string name="tb">TB</string>
+    <string name="days">روز</string>
+    <string name="hours">ساعت</string>
+    <string name="minutes">دقیقه</string>
+    <string name="seconds">ثانیه</string>
+    <string name="not_available">ناموجود</string>
+    <string name="optional">اختیاری</string>
+    <string name="required">الزامی</string>
+    <string name="enter_value">یک مقدار وارد کنید</string>
+    <string name="saved">ذخیره شد</string>
+    <string name="deleted">حذف شد</string>
+    <string name="operation_success">عملیات موفق بود</string>
+    <string name="operation_failed">عملیات ناموفق بود</string>
+    <string name="generic_field_error">این مقدار معتبر نیست</string>
+    <string name="permission_denied">دسترسی لازم داده نشده است</string>
+    <string name="notification_channel">به‌روزرسانی‌های پنل</string>
+    <string name="content_description_logo">لوگوی هیدیفای</string>
+    <string name="content_description_status_dot">نشانگر وضعیت</string>
+    <string name="content_description_qr">کیوآر کد لینک اشتراک</string>
+</resources>

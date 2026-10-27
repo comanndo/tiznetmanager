@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hiddify / TizNet brand -->
+    <color name="brand_50">#F1F4FE</color>
+    <color name="brand_100">#E2E8FD</color>
+    <color name="brand_200">#C2CEFB</color>
+    <color name="brand_300">#9AA9F6</color>
+    <color name="brand_400">#7485EF</color>
+    <color name="brand_500">#455FE9</color>
+    <color name="brand_600">#3650E0</color>
+    <color name="brand_700">#2C41BD</color>
+    <color name="brand_800">#25379A</color>
+    <color name="brand_900">#1F2D77</color>
+
+    <!-- Status -->
+    <color name="status_active">#22B07D</color>
+    <color name="status_disabled">#8A94A6</color>
+    <color name="status_expired">#FB7B8E</color>
+    <color name="status_no_data">#F5A623</color>
+    <color name="status_online">#22B07D</color>
+    <color name="status_offline">#FB7B8E</color>
+    <color name="status_late">#F5A623</color>
+
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="scrim">#99000000</color>
+
+    <!-- Light scheme -->
+    <color name="light_primary">#3650E0</color>
+    <color name="light_on_primary">#FFFFFF</color>
+    <color name="light_primary_container">#E0E5FF</color>
+    <color name="light_on_primary_container">#05125C</color>
+    <color name="light_secondary">#595E72</color>
+    <color name="light_on_secondary">#FFFFFF</color>
+    <color name="light_secondary_container">#DEE1F9</color>
+    <color name="light_background">#F6F8FD</color>
+    <color name="light_on_background">#1A1C1E</color>
+    <color name="light_surface">#FFFFFF</color>
+    <color name="light_on_surface">#1A1C1E</color>
+    <color name="light_surface_variant">#E2E1EC</color>
+    <color name="light_on_surface_variant">#45464F</color>
+    <color name="light_outline">#767680</color>
+    <color name="light_error">#BA1A1A</color>
+    <color name="light_on_error">#FFFFFF</color>
+    <color name="light_error_container">#FFDAD6</color>
+
+    <!-- Dark scheme -->
+    <color name="dark_primary">#B9C4FF</color>
+    <color name="dark_on_primary">#0B2589</color>
+    <color name="dark_primary_container">#233FA8</color>
+    <color name="dark_on_primary_container">#E0E5FF</color>
+    <color name="dark_secondary">#C2C5DD</color>
+    <color name="dark_on_secondary">#2B2F42</color>
+    <color name="dark_secondary_container">#424759</color>
+    <color name="dark_background">#111318</color>
+    <color name="dark_on_background">#E3E2E6</color>
+    <color name="dark_surface">#1A1C22</color>
+    <color name="dark_on_surface">#E3E2E6</color>
+    <color name="dark_surface_variant">#45464F</color>
+    <color name="dark_on_surface_variant">#C6C5D0</color>
+    <color name="dark_outline">#8F909A</color>
+    <color name="dark_error">#FFB4AB</color>
+    <color name="dark_on_error">#690005</color>
+    <color name="dark_error_container">#93000A</color>
+</resources>

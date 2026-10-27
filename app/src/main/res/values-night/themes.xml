@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.TizNet" parent="Theme.TizNet.Dark" />
+    <style name="Theme.TizNet.Splash" parent="Theme.TizNet.Dark">
+        <item name="android:windowSplashScreenBackground">@color/brand_900</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+    </style>
+</resources>
