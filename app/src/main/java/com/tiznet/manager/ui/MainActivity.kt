@@ -49,6 +49,22 @@ class MainActivity : AppCompatActivity() {
         val app = application as TizNetApp
         if (app.prefs.dynamicColor) DynamicColors.applyToActivityIfAvailable(this)
         super.onCreate(savedInstanceState)
+
+        // Surface a previous crash BEFORE inflating any app UI: if startup itself is
+        // broken, this dialog still appears and lets the user share the stack trace.
+        if (CrashReporter.hasPendingCrash(this)) {
+            showPendingCrashDialog()
+            return
+        }
+
+        val initialized = runCatching { initializeUi(app) }.onFailure {
+            CrashReporter.recordException(this, it)
+            showPendingCrashDialog()
+        }.isSuccess
+        if (!initialized) return
+    }
+
+    private fun initializeUi(app: TizNetApp) {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -102,12 +118,9 @@ class MainActivity : AppCompatActivity() {
             val restored = app.session.restoreLastSession()
             if (restored) navigateSafely(R.id.dashboardFragment)
         }
-
-        showPendingCrashIfAny()
     }
 
-    private fun showPendingCrashIfAny() {
-        if (!CrashReporter.hasPendingCrash(this)) return
+    private fun showPendingCrashDialog() {
         val trace = CrashReporter.readPendingCrash(this)
         val textView = TextView(this).apply {
             text = trace
@@ -119,9 +132,13 @@ class MainActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.crash_dialog_title)
             .setView(scroll)
+            .setCancelable(false)
             .setPositiveButton(R.string.crash_share) { _, _ -> shareCrashLog() }
-            .setNegativeButton(R.string.crash_dismiss, null)
-            .setOnDismissListener { CrashReporter.clear(this) }
+            .setNegativeButton(R.string.crash_dismiss) { _, _ -> finishAndRemoveTask() }
+            .setOnDismissListener {
+                // Keep the report until it is shared or the dialog is explicitly dismissed.
+                if (!isFinishing) finishAndRemoveTask()
+            }
             .show()
     }
 
@@ -140,6 +157,7 @@ class MainActivity : AppCompatActivity() {
         }
         startActivity(Intent.createChooser(intent, getString(R.string.crash_share)))
         CrashReporter.clear(this)
+        finishAndRemoveTask()
     }
 
     private fun drawerListener() = NavigationView.OnNavigationItemSelectedListener { item ->
@@ -172,6 +190,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        if (!::binding.isInitialized) {
+            super.onBackPressed()
+            return
+        }
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else {

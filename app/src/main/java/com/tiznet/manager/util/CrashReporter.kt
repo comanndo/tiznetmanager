@@ -47,6 +47,11 @@ object CrashReporter {
         crashFile(context).writeText(body)
     }
 
+    /** Records a caught exception (e.g. guarded UI initialization) like an uncaught crash. */
+    fun recordException(context: Context, throwable: Throwable) {
+        writeCrash(context.applicationContext, Thread.currentThread(), throwable)
+    }
+
     fun hasPendingCrash(context: Context): Boolean = crashFile(context).exists()
 
     fun readPendingCrash(context: Context): String =
