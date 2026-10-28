@@ -10,7 +10,10 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <include android:id="@+id/stateView" layout="@layout/view_state" />
+        <include
+            android:id="@+id/stateView"
+            layout="@layout/view_state"
+            android:visibility="gone" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
