@@ -366,4 +366,7 @@
     <string name="content_description_logo">Hiddify logo</string>
     <string name="content_description_status_dot">Status indicator</string>
     <string name="content_description_qr">Subscription link QR code</string>
+    <string name="crash_dialog_title">Application crash report</string>
+    <string name="crash_share">Share report</string>
+    <string name="crash_dismiss">Dismiss</string>
 </resources>

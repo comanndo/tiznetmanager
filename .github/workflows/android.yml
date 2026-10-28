@@ -56,6 +56,26 @@ jobs:
           cp app/build/outputs/apk/debug/app-debug.apk "TizNetManager-v${VERSION}-debug.apk"
           ls -lh TizNetManager-*.apk
 
+      - name: Inspect APK contents
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "APK: $(ls TizNetManager-*.apk)"
+            echo "Native libraries:"
+            unzip -l app/build/outputs/apk/debug/app-debug.apk | grep '\.so$' || echo "  (none)"
+            echo
+            echo "Dex files:"
+            unzip -l app/build/outputs/apk/debug/app-debug.apk | grep '\.dex$'
+          } > apk-info.txt
+          python3 scripts/ci_report.py apk-info.txt "APK inspection report"
+
+      - name: Post build log on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/ci_report.py build-log.txt
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:

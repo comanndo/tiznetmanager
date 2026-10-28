@@ -1,9 +1,13 @@
 package com.tiznet.manager.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ScrollView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
@@ -14,12 +18,16 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.tiznet.manager.R
 import com.tiznet.manager.TizNetApp
 import com.tiznet.manager.databinding.ActivityMainBinding
+import com.tiznet.manager.util.CrashReporter
+import com.tiznet.manager.util.dp
 import com.tiznet.manager.util.visible
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -94,6 +102,44 @@ class MainActivity : AppCompatActivity() {
             val restored = app.session.restoreLastSession()
             if (restored) navigateSafely(R.id.dashboardFragment)
         }
+
+        showPendingCrashIfAny()
+    }
+
+    private fun showPendingCrashIfAny() {
+        if (!CrashReporter.hasPendingCrash(this)) return
+        val trace = CrashReporter.readPendingCrash(this)
+        val textView = TextView(this).apply {
+            text = trace
+            textSize = 11f
+            setTextIsSelectable(true)
+            setPadding(dp(20), dp(12), dp(20), 0)
+        }
+        val scroll = ScrollView(this).apply { addView(textView) }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.crash_dialog_title)
+            .setView(scroll)
+            .setPositiveButton(R.string.crash_share) { _, _ -> shareCrashLog() }
+            .setNegativeButton(R.string.crash_dismiss, null)
+            .setOnDismissListener { CrashReporter.clear(this) }
+            .show()
+    }
+
+    private fun shareCrashLog() {
+        val file: File = CrashReporter.crashFile(this)
+        val uri = FileProvider.getUriForFile(
+            this,
+            "${packageName}.fileprovider",
+            file
+        )
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, "TizNet Manager crash report")
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivity(Intent.createChooser(intent, getString(R.string.crash_share)))
+        CrashReporter.clear(this)
     }
 
     private fun drawerListener() = NavigationView.OnNavigationItemSelectedListener { item ->
