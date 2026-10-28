@@ -66,9 +66,16 @@ class PanelRepository(
             }.version
         }.getOrNull()
 
-        // Authentication proof: 401 (v13+) or 403 (v11/v12) means bad credentials.
+        // Authentication proof: 401 (v13+) or 403 (v11/v12) means bad credentials,
+        // 404 means the proxy path/base URL is wrong.
         runCatching { apiCall { api.me() } }.onFailure { e ->
-            if (e is ApiException && (e.isUnauthorized || e.isForbidden)) throw e
+            if (e is ApiException && (e.isUnauthorized || e.isForbidden || e.isNotFound)) {
+                throw if (e.isNotFound && resolvedPath.isBlank()) {
+                    ApiException(404, "مسیر پنل (Proxy Path) پیدا نشد؛ لینک کامل پنل را وارد کنید")
+                } else {
+                    e
+                }
+            }
         }
 
         // Bootstrap is modern-only; never let its 404 fail a legacy connection.
