@@ -39,8 +39,8 @@ class StateView(private val root: View) {
 
     fun error(
         message: String,
-        onRetry: (() -> Unit)? = null,
-        retryText: String? = null
+        retryText: String? = null,
+        onRetry: (() -> Unit)? = null
     ) {
         container.visibility = View.VISIBLE
         progress.visibility = View.GONE
