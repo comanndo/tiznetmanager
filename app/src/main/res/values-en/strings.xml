@@ -369,4 +369,5 @@
     <string name="crash_dialog_title">Application crash report</string>
     <string name="crash_share">Share report</string>
     <string name="crash_dismiss">Dismiss</string>
+    <string name="unsupported_legacy">This feature requires Hiddify panel v13 or newer; your panel version does not provide this API</string>
 </resources>

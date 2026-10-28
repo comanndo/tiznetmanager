@@ -393,4 +393,5 @@
     <string name="crash_dialog_title">گزارش خطای برنامه</string>
     <string name="crash_share">اشتراک‌گذاری گزارش</string>
     <string name="crash_dismiss">بستن</string>
+    <string name="unsupported_legacy">این قابلیت فقط روی پنل هیدیفای نسخه ۱۳ به بالا موجود است؛ نسخه پنل شما این API را ندارد</string>
 </resources>

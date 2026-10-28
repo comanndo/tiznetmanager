@@ -29,15 +29,33 @@ class AdminsViewModel(app: Application) : AndroidViewModel(app) {
     fun load() {
         viewModelScope.launch {
             _state.value = UiState.Loading
-            runCatching { apiCall { session.api().admins().admins } }
-                .onSuccess { _state.value = if (it.isEmpty()) UiState.Success(it) else UiState.Success(it) }
+            runCatching {
+                if (session.isLegacyApi) {
+                    val meUuid = session.me.value?.uuid
+                    apiCall { session.api().legacyAdmins() }
+                        .map { com.tiznet.manager.data.remote.LegacyMappers.run { it.toRow(it.uuid == meUuid) } }
+                } else {
+                    apiCall { session.api().admins().admins }
+                }
+            }
+                .onSuccess { _state.value = UiState.Success(it) }
                 .onFailure { _state.value = UiState.Error(ApiException.from(it, "خطا").message, it) }
         }
     }
 
     fun create(body: JsonObject, onDone: (String?) -> Unit) {
         viewModelScope.launch {
-            runCatching { apiCall { session.api().createAdmin(body) } }
+            runCatching {
+                if (session.isLegacyApi) {
+                    apiCall {
+                        session.api().legacyCreateAdmin(
+                            com.tiznet.manager.data.remote.LegacyMappers.sanitizeAdminBody(body)
+                        )
+                    }
+                } else {
+                    apiCall { session.api().createAdmin(body) }
+                }
+            }
                 .onSuccess { load(); onDone(null) }
                 .onFailure { onDone(ApiException.from(it, "خطا").message) }
         }
@@ -45,7 +63,18 @@ class AdminsViewModel(app: Application) : AndroidViewModel(app) {
 
     fun update(uuid: String, body: JsonObject, onDone: (String?) -> Unit) {
         viewModelScope.launch {
-            runCatching { apiCall { session.api().updateAdmin(uuid, body) } }
+            runCatching {
+                if (session.isLegacyApi) {
+                    apiCall {
+                        session.api().legacyUpdateAdmin(
+                            uuid,
+                            com.tiznet.manager.data.remote.LegacyMappers.sanitizeAdminBody(body)
+                        )
+                    }
+                } else {
+                    apiCall { session.api().updateAdmin(uuid, body) }
+                }
+            }
                 .onSuccess { load(); onDone(null) }
                 .onFailure { onDone(ApiException.from(it, "خطا").message) }
         }
@@ -53,7 +82,12 @@ class AdminsViewModel(app: Application) : AndroidViewModel(app) {
 
     fun delete(uuid: String, onDone: (String?) -> Unit) {
         viewModelScope.launch {
-            runCatching { apiCall { session.api().deleteAdmin(uuid) } }
+            runCatching {
+                apiCall {
+                    if (session.isLegacyApi) session.api().legacyDeleteAdmin(uuid)
+                    else session.api().deleteAdmin(uuid)
+                }
+            }
                 .onSuccess { load(); onDone(null) }
                 .onFailure { onDone(ApiException.from(it, "خطا").message) }
         }

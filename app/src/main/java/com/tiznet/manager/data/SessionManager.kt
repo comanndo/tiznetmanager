@@ -3,6 +3,7 @@ package com.tiznet.manager.data
 import com.tiznet.manager.data.db.PanelEntity
 import com.tiznet.manager.data.model.AdminInfo
 import com.tiznet.manager.data.model.BootstrapResponse
+import com.tiznet.manager.data.model.PanelCapabilities
 import com.tiznet.manager.data.prefs.PrefsManager
 import com.tiznet.manager.data.remote.HiddifyApi
 import com.tiznet.manager.data.repo.PanelRepository
@@ -27,6 +28,12 @@ class SessionManager(
 
     val isConnected: Boolean get() = _activePanel.value != null
 
+    /** v11/v12 panels expose only the limited commercial REST API v2. */
+    val isLegacyApi: Boolean
+        get() = PanelCapabilities.isLegacy(
+            _bootstrap.value?.panelVersion ?: _activePanel.value?.panelVersion
+        )
+
     fun requirePanel(): PanelEntity =
         _activePanel.value ?: throw IllegalStateException("No active panel")
 
@@ -41,25 +48,38 @@ class SessionManager(
 
     suspend fun activate(panel: PanelEntity, silent: Boolean = false): Boolean {
         val api = repository.apiFor(panel)
-        val boot = apiCall {
-            api.bootstrap(
-                com.tiznet.manager.data.remote.RetrofitFactory
-                    .bootstrapUrl(panel.baseUrl, panel.proxyPath)
-            )
-        }
-        val info = runCatching { apiCall { api.me() } }.getOrNull()
+        // me/ exists on every supported generation (v11-v14) and proves the credentials.
+        val info = apiCall { api.me() }
+        val version = runCatching {
+            apiCall {
+                api.panelInfo(
+                    com.tiznet.manager.data.remote.RetrofitFactory.panelInfoUrl(panel)
+                )
+            }.version
+        }.getOrNull()
+        // Bootstrap is v13+ only: tolerate 404 on legacy panels.
+        val boot = runCatching {
+            apiCall {
+                api.bootstrap(
+                    com.tiznet.manager.data.remote.RetrofitFactory
+                        .bootstrapUrl(panel.baseUrl, panel.proxyPath)
+                )
+            }
+        }.getOrNull()
+        val effectiveBoot = boot ?: BootstrapResponse(
+            proxyPath = panel.proxyPath,
+            panelVersion = version
+        )
         _activePanel.value = panel
-        _bootstrap.value = boot
+        _bootstrap.value = effectiveBoot
         _me.value = info
         prefs.activePanelId = panel.id
         repository.touch(panel)
-        val resolvedPath = boot.proxyPath.takeIf { it.isNotBlank() }
-        if ((panel.proxyPath.isBlank() || resolvedPath != null) && resolvedPath != null &&
-            resolvedPath != panel.proxyPath
-        ) {
+        val resolvedPath = boot?.proxyPath?.takeIf { it.isNotBlank() }
+        if (resolvedPath != null && resolvedPath != panel.proxyPath) {
             repository.update(panel.copy(proxyPath = resolvedPath))
         }
-        repository.storeVersion(panel.id, boot.panelVersion)
+        repository.storeVersion(panel.id, version ?: boot?.panelVersion)
         if (!silent) _activePanel.value = repository.byId(panel.id) ?: panel
         return true
     }

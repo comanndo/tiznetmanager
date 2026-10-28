@@ -33,6 +33,13 @@ class CleanIpViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun loadReality() {
+        if (session.isLegacyApi) {
+            _reality.value = UiState.Error(
+                getApplication<android.app.Application>()
+                    .getString(com.tiznet.manager.R.string.unsupported_legacy)
+            )
+            return
+        }
         viewModelScope.launch {
             _reality.value = UiState.Loading
             runCatching { apiCall { api.realityState() } }
@@ -42,6 +49,7 @@ class CleanIpViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun loadNetworks() {
+        if (session.isLegacyApi) return
         viewModelScope.launch {
             runCatching { apiCall { api.cleanIpNetwork() } }
                 .onSuccess { _networks.value = it }

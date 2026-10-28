@@ -58,7 +58,16 @@ class UsersViewModel(app: Application) : AndroidViewModel(app) {
     fun load() {
         viewModelScope.launch {
             _state.value = UiState.Loading
-            runCatching { apiCall { session.api().users() } }
+            runCatching {
+                if (session.isLegacyApi) {
+                    val rows = apiCall { session.api().legacyUsers() }
+                    com.tiznet.manager.data.remote.LegacyMappers.usersState(
+                        rows, session.me.value?.uuid
+                    )
+                } else {
+                    apiCall { session.api().users() }
+                }
+            }
                 .onSuccess {
                     _allUsers.value = it.users
                     _state.value = UiState.Success(it)
@@ -81,7 +90,12 @@ class UsersViewModel(app: Application) : AndroidViewModel(app) {
 
     fun deleteUser(uuid: String, onDone: (String?) -> Unit) {
         viewModelScope.launch {
-            runCatching { apiCall { session.api().deleteUser(uuid) } }
+            runCatching {
+                apiCall {
+                    if (session.isLegacyApi) session.api().legacyDeleteUser(uuid)
+                    else session.api().deleteUser(uuid)
+                }
+            }
                 .onSuccess {
                     _allUsers.update { list -> list.filterNot { it.uuid == uuid } }
                     onDone(null)
@@ -93,7 +107,12 @@ class UsersViewModel(app: Application) : AndroidViewModel(app) {
     fun toggleEnabled(user: UserRow, onDone: (String?) -> Unit) {
         viewModelScope.launch {
             val body = buildJsonObject { put("enable", !user.enable) }
-            runCatching { apiCall { session.api().updateUser(user.uuid, body) } }
+            runCatching {
+                apiCall {
+                    if (session.isLegacyApi) session.api().legacyUpdateUser(user.uuid, body)
+                    else session.api().updateUser(user.uuid, body)
+                }
+            }
                 .onSuccess {
                     _allUsers.update { list ->
                         list.map { if (it.uuid == user.uuid) it.copy(enable = it.enable.not()) else it }
@@ -107,6 +126,10 @@ class UsersViewModel(app: Application) : AndroidViewModel(app) {
     fun bulkAction(action: String, days: Int? = null, gb: Double? = null, onDone: (String?) -> Unit) {
         val uuids = _selection.value.toList()
         if (uuids.isEmpty()) return
+        if (session.isLegacyApi) {
+            onDone("عملیات گروهی فقط روی پنل هیدیفای نسخه ۱۳ به بالا پشتیبانی می‌شود")
+            return
+        }
         viewModelScope.launch {
             val body = buildJsonObject {
                 put("action", action)
