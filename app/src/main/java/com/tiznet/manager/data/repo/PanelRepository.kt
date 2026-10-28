@@ -66,6 +66,16 @@ class PanelRepository(
             }.version
         }.getOrNull()
 
+        // v11/v12 only accept the admin UUID as the identifier (no alias login).
+        if (com.tiznet.manager.data.model.PanelCapabilities.isLegacy(version) &&
+            !com.tiznet.manager.data.remote.PanelAuthInterceptor.looksLikeUuid(username)
+        ) {
+            throw ApiException(
+                -1,
+                "روی پنل نسخه ۱۱/۱۲ نام کاربری باید UUID ادمین باشد (همان شناسهٔ لینک ورود به پنل)"
+            )
+        }
+
         // Authentication proof: 401 (v13+) or 403 (v11/v12) means bad credentials,
         // 404 means the proxy path/base URL is wrong.
         runCatching { apiCall { api.me() } }.onFailure { e ->

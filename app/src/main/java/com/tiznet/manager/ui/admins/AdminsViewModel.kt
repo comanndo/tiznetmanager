@@ -14,7 +14,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 class AdminsViewModel(app: Application) : AndroidViewModel(app) {
@@ -32,14 +36,49 @@ class AdminsViewModel(app: Application) : AndroidViewModel(app) {
             runCatching {
                 if (session.isLegacyApi) {
                     val meUuid = session.me.value?.uuid
-                    apiCall { session.api().legacyAdmins() }
-                        .map { com.tiznet.manager.data.remote.LegacyMappers.run { it.toRow(it.uuid == meUuid) } }
+                    // v11 answers 404 "You have no admin" when the list is empty.
+                    runCatching { apiCall { session.api().legacyAdmins() } }
+                        .getOrElse { e ->
+                            val parsed = ApiException.from(e, "خطا")
+                            if (parsed.isNotFound) emptyList() else throw parsed
+                        }
+                        .map {
+                            com.tiznet.manager.data.remote.LegacyMappers.run {
+                                it.toRow(it.uuid == meUuid)
+                            }
+                        }
                 } else {
                     apiCall { session.api().admins().admins }
                 }
             }
                 .onSuccess { _state.value = UiState.Success(it) }
-                .onFailure { _state.value = UiState.Error(ApiException.from(it, "خطا").message, it) }
+                .onFailure {
+                    val parsed = ApiException.from(it, "خطا")
+                    _state.value = UiState.Error(
+                        if (parsed.isForbidden)
+                            getApplication<android.app.Application>()
+                                .getString(com.tiznet.manager.R.string.admins_requires_role)
+                        else parsed.message,
+                        it
+                    )
+                }
+        }
+    }
+
+    /** v11 AdminSchema requires mode/can_add_admin/lang which the v13 dialog does not send. */
+    private fun legacyPayload(body: JsonObject, isCreate: Boolean): JsonObject = buildJsonObject {
+        body["name"]?.let { put("name", it.jsonPrimitive.content) }
+        body["comment"]?.let { put("comment", it.jsonPrimitive.contentOrNull ?: "") }
+        body["max_users"]?.let { put("max_users", it) }
+        body["max_active_users"]?.let { put("max_active_users", it) }
+        body["password"]?.let { put("password", it) }
+        if (isCreate) {
+            put("mode", "agent")
+            put(
+                "can_add_admin",
+                body["capabilities"]?.jsonObject?.get("add_sub_admins")?.jsonPrimitive?.booleanOrNull ?: false
+            )
+            put("lang", "en")
         }
     }
 
@@ -47,11 +86,7 @@ class AdminsViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             runCatching {
                 if (session.isLegacyApi) {
-                    apiCall {
-                        session.api().legacyCreateAdmin(
-                            com.tiznet.manager.data.remote.LegacyMappers.sanitizeAdminBody(body)
-                        )
-                    }
+                    apiCall { session.api().legacyCreateAdmin(legacyPayload(body, isCreate = true)) }
                 } else {
                     apiCall { session.api().createAdmin(body) }
                 }
@@ -66,10 +101,7 @@ class AdminsViewModel(app: Application) : AndroidViewModel(app) {
             runCatching {
                 if (session.isLegacyApi) {
                     apiCall {
-                        session.api().legacyUpdateAdmin(
-                            uuid,
-                            com.tiznet.manager.data.remote.LegacyMappers.sanitizeAdminBody(body)
-                        )
+                        session.api().legacyUpdateAdmin(uuid, legacyPayload(body, isCreate = false))
                     }
                 } else {
                     apiCall { session.api().updateAdmin(uuid, body) }

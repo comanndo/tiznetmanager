@@ -78,7 +78,14 @@ class BackupFragment : BaseFragment() {
         viewModel.state.collectOnStarted { state ->
             when (state) {
                 UiState.Loading -> stateView.loading()
-                is UiState.Error -> stateView.error(state.message) { viewModel.load() }
+                is UiState.Error -> stateView.error(
+                    state.message,
+                    onRetry = { if (session.isLegacyApi) openWebAdmin() else viewModel.load() },
+                    retryText = getString(
+                        if (session.isLegacyApi) R.string.unsupported_legacy_open
+                        else R.string.action_retry
+                    )
+                )
                 is UiState.Success -> {
                     stateView.content()
                     binding.content.show()

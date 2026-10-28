@@ -37,7 +37,11 @@ class StateView(private val root: View) {
         emptyText.visibility = View.GONE
     }
 
-    fun error(message: String, onRetry: (() -> Unit)? = null) {
+    fun error(
+        message: String,
+        retryText: String? = null,
+        onRetry: (() -> Unit)? = null
+    ) {
         container.visibility = View.VISIBLE
         progress.visibility = View.GONE
         loadingText.visibility = View.GONE
@@ -47,6 +51,7 @@ class StateView(private val root: View) {
         errorText.visibility = View.VISIBLE
         errorText.text = message
         retry.visibility = if (onRetry != null) View.VISIBLE else View.GONE
+        retryText?.let { retry.text = it }
         retry.setOnClickListener { onRetry?.invoke() }
     }
 

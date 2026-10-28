@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.tiznet.manager.R
 import com.tiznet.manager.data.model.ProtocolSwitch
 import com.tiznet.manager.databinding.FragmentProtocolsBinding
 import com.tiznet.manager.databinding.ItemProtocolBinding
@@ -45,7 +46,14 @@ class ProtocolsFragment : BaseFragment() {
             binding.swipeRefresh.isRefreshing = false
             when (state) {
                 UiState.Loading -> stateView.loading()
-                is UiState.Error -> stateView.error(state.message) { viewModel.load() }
+                is UiState.Error -> stateView.error(
+                    state.message,
+                    onRetry = { if (session.isLegacyApi) openWebAdmin() else viewModel.load() },
+                    retryText = getString(
+                        if (session.isLegacyApi) R.string.unsupported_legacy_open
+                        else R.string.action_retry
+                    )
+                )
                 is UiState.Success -> {
                     stateView.content()
                     adapter.submitList(state.data)

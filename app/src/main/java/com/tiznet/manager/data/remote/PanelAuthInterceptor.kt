@@ -65,7 +65,7 @@ class PanelAuthInterceptor(
         val builder = chain.request().newBuilder()
             .header("Authorization", Credentials.basic(panel.username, password))
         // The UUID works as an API key on v11-v14 regardless of the password.
-        if (UUID_REGEX.matches(panel.username.trim())) {
+        if (looksLikeUuid(panel.username)) {
             builder.header("Hiddify-API-Key", panel.username.trim())
         } else if (password.isEmpty()) {
             builder.header("Hiddify-API-Key", panel.username)
@@ -75,8 +75,13 @@ class PanelAuthInterceptor(
 
     companion object {
         private val AUTH_FAILURE_CODES = setOf(401, 403)
-        private val UUID_REGEX = Regex(
-            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-        )
+
+        /** Canonical dashed UUID, or a bare 32 hex digit UUID. */
+        fun looksLikeUuid(value: String): Boolean {
+            val v = value.trim()
+            return v.matches(
+                Regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+            ) || v.matches(Regex("^[0-9a-fA-F]{32}$"))
+        }
     }
 }

@@ -394,4 +394,11 @@
     <string name="crash_share">اشتراک‌گذاری گزارش</string>
     <string name="crash_dismiss">بستن</string>
     <string name="unsupported_legacy">این قابلیت فقط روی پنل هیدیفای نسخه ۱۳ به بالا موجود است؛ نسخه پنل شما این API را ندارد</string>
+    <string name="unsupported_legacy_open">باز کردن پنل در مرورگر</string>
+    <string name="about_language_picker">زبان برنامه</string>
+    <string name="lang_fa">فارسی</string>
+    <string name="lang_en">English</string>
+    <string name="lang_system">هماهنگ با سیستم</string>
+    <string name="admins_requires_role">مدیریت ادمین‌ها فقط برای ادمین‌های ارشد مجاز است</string>
+    <string name="reset_unsupported_legacy">ریست مصرف و روزها از طریق API نسخه ۱۱ پنل پشتیبانی نمی‌شود؛ از پنل وب استفاده کنید</string>
 </resources>

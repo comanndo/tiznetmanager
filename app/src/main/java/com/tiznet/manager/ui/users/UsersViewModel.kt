@@ -60,7 +60,12 @@ class UsersViewModel(app: Application) : AndroidViewModel(app) {
             _state.value = UiState.Loading
             runCatching {
                 if (session.isLegacyApi) {
-                    val rows = apiCall { session.api().legacyUsers() }
+                    // v11 answers 404 "You have no user" when the list is empty.
+                    val rows = runCatching { apiCall { session.api().legacyUsers() } }
+                        .getOrElse { e ->
+                            val parsed = ApiException.from(e, "خطا")
+                            if (parsed.isNotFound) emptyList() else throw parsed
+                        }
                     com.tiznet.manager.data.remote.LegacyMappers.usersState(
                         rows, session.me.value?.uuid
                     )
