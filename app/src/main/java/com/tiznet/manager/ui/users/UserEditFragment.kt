@@ -11,6 +11,7 @@ import androidx.navigation.fragment.navArgs
 import com.tiznet.manager.R
 import com.tiznet.manager.databinding.FragmentUserEditBinding
 import com.tiznet.manager.ui.common.BaseFragment
+import com.tiznet.manager.util.applyImeInsets
 import com.tiznet.manager.util.hide
 import com.tiznet.manager.util.show
 import com.tiznet.manager.util.snack
@@ -32,6 +33,7 @@ class UserEditFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.root.applyImeInsets()
         val isBulk = args.bulk
         binding.countLayout.visibility = if (isBulk) View.VISIBLE else View.GONE
         binding.nameLayout.hint =
