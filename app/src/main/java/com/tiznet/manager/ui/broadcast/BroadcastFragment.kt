@@ -11,6 +11,7 @@ import com.tiznet.manager.databinding.FragmentBroadcastBinding
 import com.tiznet.manager.ui.common.BaseFragment
 import com.tiznet.manager.ui.common.StateView
 import com.tiznet.manager.ui.common.UiState
+import com.tiznet.manager.util.applyImeInsets
 import com.tiznet.manager.util.hide
 import com.tiznet.manager.util.show
 import com.tiznet.manager.util.snack
@@ -34,6 +35,7 @@ class BroadcastFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.root.applyImeInsets()
         stateView = StateView(binding.stateView.root)
         binding.contentCard.hide()
 

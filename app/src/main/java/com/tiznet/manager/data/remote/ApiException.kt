@@ -22,7 +22,8 @@ class ApiException(
             is ApiException -> throwable
             is HttpException -> {
                 val detail = parseServerMessage(throwable)
-                val text = when (throwable.code()) {
+                val code = throwable.code()
+                val text = when (code) {
                     400, 422 -> detail ?: "درخواست نامعتبر بود"
                     401 -> "نام کاربری یا رمز عبور اشتباه است"
                     403 -> "به این بخش دسترسی ندارید"
@@ -31,7 +32,8 @@ class ApiException(
                     in 500..599 -> "خطای داخلی سرور هیدیفای"
                     else -> detail ?: fallback
                 }
-                ApiException(throwable.code(), text, detail, throwable)
+                // Keep the HTTP status visible so connection problems are diagnosable.
+                ApiException(code, "$text (HTTP $code)", detail, throwable)
             }
             is UnknownHostException ->
                 ApiException(-1, "آدرس پنل در دسترس نیست؛ اتصال شبکه و آدرس را بررسی کنید", cause = throwable)

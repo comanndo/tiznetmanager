@@ -4,8 +4,6 @@ import android.util.Base64
 import com.tiznet.manager.data.db.PanelEntity
 import com.tiznet.manager.util.CryptoManager
 import kotlinx.serialization.json.Json
-import okhttp3.Credentials
-import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -56,29 +54,32 @@ object RetrofitFactory {
         return if (path.isEmpty()) "$base/__admin_v2_bootstrap" else "$base/$path/__admin_v2_bootstrap"
     }
 
-    private fun basicAuthHeader(username: String, password: String): String =
-        Credentials.basic(username, password)
-
     private fun httpClient(panel: PanelEntity, password: String): OkHttpClient {
         val key = "${panel.id}|${panel.username}|${panel.baseUrl}|${panel.proxyPath}"
-        return clientCache.getOrPut(key) {
-            val auth = Interceptor { chain ->
-                val request = chain.request().newBuilder()
-                    .header("Authorization", basicAuthHeader(panel.username, password))
+        return clientCache.getOrPut(key) { buildClient(panel, password) }
+    }
+
+    private fun buildClient(panel: PanelEntity, password: String): OkHttpClient {
+        val jar = PanelCookieJar()
+        val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }
+        val headers = okhttp3.Interceptor { chain ->
+            chain.proceed(
+                chain.request().newBuilder()
+                    .header("User-Agent", PanelAuth.USER_AGENT)
                     .header("Accept", "application/json")
-                    .header("User-Agent", "TizNet-Manager/1.0 (Android)")
                     .build()
-                chain.proceed(request)
-            }
-            val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }
-            OkHttpClient.Builder()
-                .connectTimeout(20, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
-                .addInterceptor(auth)
-                .addInterceptor(logging)
-                .build()
+            )
         }
+        return OkHttpClient.Builder()
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .cookieJar(jar)
+            // Form login + session cookie, with Basic/API-Key fallback for old panels.
+            .addInterceptor(PanelAuthInterceptor(panel, password, jar))
+            .addInterceptor(headers)
+            .addInterceptor(logging)
+            .build()
     }
 
     fun apiFor(panel: PanelEntity, crypto: CryptoManager): HiddifyApi {
@@ -94,7 +95,10 @@ object RetrofitFactory {
         }
     }
 
-    /** A one-off client for the login flow, before the panel is persisted. */
+    /**
+     * A one-off client for the login flow, before the panel is persisted.
+     * The session handshake runs lazily on the first request.
+     */
     fun apiForTemporary(
         baseUrl: String,
         proxyPath: String,
@@ -109,21 +113,7 @@ object RetrofitFactory {
             username = username,
             encryptedPassword = ""
         )
-        val auth = Interceptor { chain ->
-            val request = chain.request().newBuilder()
-                .header("Authorization", basicAuthHeader(username, password))
-                .header("Accept", "application/json")
-                .header("User-Agent", "TizNet-Manager/1.0 (Android)")
-                .build()
-            chain.proceed(request)
-        }
-        val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }
-        val client = OkHttpClient.Builder()
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .addInterceptor(auth)
-            .addInterceptor(logging)
-            .build()
+        val client = buildClient(tempPanel, password)
         val base = apiBase(tempPanel)
         val api = Retrofit.Builder()
             .baseUrl(base)
@@ -136,6 +126,7 @@ object RetrofitFactory {
 
     fun evict(panelId: Long) {
         serviceCache.remove(panelId)
+        clientCache.keys.removeAll { it.startsWith("$panelId|") }
     }
 
     @Suppress("unused")

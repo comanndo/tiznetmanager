@@ -13,6 +13,7 @@ import com.tiznet.manager.data.db.PanelEntity
 import com.tiznet.manager.databinding.FragmentLoginBinding
 import com.tiznet.manager.ui.common.BaseFragment
 import com.tiznet.manager.ui.common.StateView
+import com.tiznet.manager.util.applyImeInsets
 import com.tiznet.manager.util.snack
 import com.tiznet.manager.util.visible
 
@@ -41,6 +42,7 @@ class LoginFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.root.applyImeInsets()
         stateView = StateView(binding.stateView.root)
         binding.savedPanelsList.layoutManager = LinearLayoutManager(requireContext())
         binding.savedPanelsList.adapter = panelsAdapter

@@ -10,6 +10,7 @@ import com.tiznet.manager.data.model.RealityState
 import com.tiznet.manager.databinding.FragmentCleanIpBinding
 import com.tiznet.manager.ui.common.BaseFragment
 import com.tiznet.manager.ui.common.UiState
+import com.tiznet.manager.util.applyImeInsets
 import com.tiznet.manager.util.snack
 
 class CleanIpFragment : BaseFragment() {
@@ -25,6 +26,7 @@ class CleanIpFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.root.applyImeInsets()
 
         viewModel.reality.collectOnStarted { state ->
             if (state is UiState.Success) bindReality(state.data)

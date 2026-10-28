@@ -4,6 +4,7 @@ import com.tiznet.manager.data.db.PanelDao
 import com.tiznet.manager.data.db.PanelEntity
 import com.tiznet.manager.data.remote.ApiException
 import com.tiznet.manager.data.remote.HiddifyApi
+import com.tiznet.manager.data.remote.PanelAuth
 import com.tiznet.manager.data.remote.RetrofitFactory
 import com.tiznet.manager.data.model.BootstrapResponse
 import com.tiznet.manager.util.CryptoManager
@@ -34,9 +35,11 @@ class PanelRepository(
     suspend fun storeVersion(id: Long, version: String?) = dao.updateVersion(id, version)
 
     /**
-     * Verifies credentials against a panel. When [proxyPath] is empty the root bootstrap is
-     * tried first; on 404/401 a couple of common discovery paths are attempted.
-     * Returns the resolved bootstrap (proxy path + panel version).
+     * Verifies credentials against a panel. When [proxyPath] is empty it is
+     * auto-discovered from the unauthenticated bootstrap endpoint/redirect.
+     * The session handshake (form login + cookie) happens inside the API
+     * client's interceptor; here we additionally confirm that the authenticated
+     * admin endpoint accepts the session.
      */
     suspend fun testConnection(
         baseUrl: String,
@@ -48,25 +51,20 @@ class PanelRepository(
         if (!RetrofitFactory.isValidUrl(normalized)) {
             throw ApiException(-1, "آدرس پنل معتبر نیست")
         }
-        val candidates = mutableListOf(proxyPath.trim().trim('/'))
-        if (proxyPath.isBlank()) candidates.add("")
-        var lastError: ApiException? = null
-        for (path in candidates.distinct()) {
-            val (api, _) = RetrofitFactory.apiForTemporary(normalized, path, username, password)
-            try {
-                val bootstrap = apiCall {
-                    api.bootstrap(RetrofitFactory.bootstrapUrl(normalized, path))
-                }
-                // Confirm the admin API itself accepts these credentials.
-                runCatching { apiCall { api.me() } }
-                return bootstrap
-            } catch (e: ApiException) {
-                lastError = e
-                // Wrong credentials must not be masked by trying the next candidate.
-                if (e.isUnauthorized || e.isForbidden) throw e
-            }
+        val resolvedPath = proxyPath.trim().trim('/').ifBlank {
+            runCatching { PanelAuth.discoverProxyPath(normalized) }.getOrNull().orEmpty()
         }
-        throw lastError ?: ApiException(-1, "اتصال به پنل ممکن نشد")
+        val (api, _) = RetrofitFactory.apiForTemporary(normalized, resolvedPath, username, password)
+        // A 401 here means the form login (and its fallbacks) rejected the credentials.
+        val bootstrap = apiCall {
+            api.bootstrap(RetrofitFactory.bootstrapUrl(normalized, resolvedPath))
+        }
+        runCatching { apiCall { api.me() } }.onFailure { e ->
+            if (e is ApiException && (e.isUnauthorized || e.isForbidden)) throw e
+        }
+        return bootstrap.copy(
+            proxyPath = bootstrap.proxyPath.ifBlank { resolvedPath }
+        )
     }
 
     fun apiFor(panel: PanelEntity): HiddifyApi = RetrofitFactory.apiFor(panel, crypto)
