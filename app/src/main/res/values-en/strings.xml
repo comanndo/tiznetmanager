@@ -72,7 +72,7 @@
     <string name="login_panel_url">Panel URL</string>
     <string name="login_panel_url_hint">https://panel.example.com:Port</string>
     <string name="login_proxy_path">Admin proxy path</string>
-    <string name="login_proxy_path_hint">e.g. d7x9k2 or leave empty to auto-detect</string>
+    <string name="login_proxy_path_hint">e.g. d7x9k2; you can also paste the full panel link in the URL field</string>
     <string name="login_username">Username / admin UUID</string>
     <string name="login_password">Password</string>
     <string name="login_password_empty_hint">Leave empty if the admin has no password</string>
@@ -369,4 +369,5 @@
     <string name="crash_dialog_title">Application crash report</string>
     <string name="crash_share">Share report</string>
     <string name="crash_dismiss">Dismiss</string>
+    <string name="unsupported_legacy">This feature requires Hiddify panel v13 or newer; your panel version does not provide this API</string>
 </resources>

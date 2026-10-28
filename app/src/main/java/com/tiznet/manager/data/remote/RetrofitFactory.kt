@@ -54,6 +54,31 @@ object RetrofitFactory {
         return if (path.isEmpty()) "$base/__admin_v2_bootstrap" else "$base/$path/__admin_v2_bootstrap"
     }
 
+    /** `/api/v2/panel/info/` — version probe that exists on v11-v14. */
+    fun panelInfoUrl(panel: PanelEntity): String =
+        apiBase(panel).removeSuffix("admin/") + "panel/info/"
+
+    fun panelInfoUrl(baseUrl: String, proxyPath: String): String {
+        val temp = PanelEntity(
+            id = 0, name = "t", baseUrl = normalizeBaseUrl(baseUrl),
+            proxyPath = proxyPath, username = "", encryptedPassword = ""
+        )
+        return panelInfoUrl(temp)
+    }
+
+    /** Splits a pasted full panel link into host base and its first path segment. */
+    fun splitBaseAndPath(input: String): Pair<String, String> {
+        val normalized = normalizeBaseUrl(input).substringBefore('?').substringBefore('#')
+        val schemeEnd = normalized.indexOf("://")
+        if (schemeEnd < 0) return normalized to ""
+        val rest = normalized.substring(schemeEnd + 3)
+        val slash = rest.indexOf('/')
+        if (slash < 0) return normalized to ""
+        val base = normalized.substring(0, schemeEnd + 3 + slash)
+        val firstSegment = rest.substring(slash + 1).trim('/').split('/').firstOrNull().orEmpty()
+        return base to firstSegment
+    }
+
     private fun httpClient(panel: PanelEntity, password: String): OkHttpClient {
         val key = "${panel.id}|${panel.username}|${panel.baseUrl}|${panel.proxyPath}"
         return clientCache.getOrPut(key) { buildClient(panel, password) }

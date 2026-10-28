@@ -37,7 +37,16 @@ class DashboardViewModel(app: Application) : AndroidViewModel(app) {
     fun load() {
         viewModelScope.launch {
             _state.value = UiState.Loading
-            runCatching { apiCall { session.api().dashboard(_days.value) } }
+            runCatching {
+                if (session.isLegacyApi) {
+                    // v11/v12 only expose server_status; map what it provides.
+                    com.tiznet.manager.data.remote.LegacyMappers.dashboard(
+                        apiCall { session.api().serverStatus() }
+                    )
+                } else {
+                    apiCall { session.api().dashboard(_days.value) }
+                }
+            }
                 .onSuccess { _state.value = UiState.Success(it) }
                 .onFailure {
                     _state.value = UiState.Error(ApiException.from(it, "خطا").message, it)

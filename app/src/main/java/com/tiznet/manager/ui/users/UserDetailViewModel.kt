@@ -25,7 +25,14 @@ class UserDetailViewModel(app: Application) : AndroidViewModel(app) {
     fun load(uuid: String) {
         viewModelScope.launch {
             _state.value = UiState.Loading
-            runCatching { apiCall { session.api().user(uuid).user } }
+            runCatching {
+                if (session.isLegacyApi) {
+                    apiCall { session.api().legacyUser(uuid) }
+                        .let { com.tiznet.manager.data.remote.LegacyMappers.run { it.toDetail() } }
+                } else {
+                    apiCall { session.api().user(uuid).user }
+                }
+            }
                 .onSuccess { _state.value = UiState.Success(it) }
                 .onFailure { _state.value = UiState.Error(ApiException.from(it, "خطا").message, it) }
         }
@@ -33,7 +40,15 @@ class UserDetailViewModel(app: Application) : AndroidViewModel(app) {
 
     fun patch(uuid: String, body: kotlinx.serialization.json.JsonObject, onDone: (String?) -> Unit) {
         viewModelScope.launch {
-            runCatching { apiCall { session.api().updateUser(uuid, body).user } }
+            runCatching {
+                if (session.isLegacyApi) {
+                    val safe = com.tiznet.manager.data.remote.LegacyMappers.sanitizeUserBody(body)
+                    apiCall { session.api().legacyUpdateUser(uuid, safe) }
+                        .let { com.tiznet.manager.data.remote.LegacyMappers.run { it.toDetail() } }
+                } else {
+                    apiCall { session.api().updateUser(uuid, body).user }
+                }
+            }
                 .onSuccess { _state.value = UiState.Success(it); onDone(null) }
                 .onFailure { onDone(ApiException.from(it, "خطا").message) }
         }
@@ -50,7 +65,12 @@ class UserDetailViewModel(app: Application) : AndroidViewModel(app) {
 
     fun delete(uuid: String, onDone: (String?) -> Unit) {
         viewModelScope.launch {
-            runCatching { apiCall { session.api().deleteUser(uuid) } }
+            runCatching {
+                apiCall {
+                    if (session.isLegacyApi) session.api().legacyDeleteUser(uuid)
+                    else session.api().deleteUser(uuid)
+                }
+            }
                 .onSuccess { onDone(null) }
                 .onFailure { onDone(ApiException.from(it, "خطا").message) }
         }

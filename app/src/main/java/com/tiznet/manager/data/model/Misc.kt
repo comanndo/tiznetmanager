@@ -5,6 +5,34 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
+// ---------------------------------------------------------------- Panel info / capabilities
+
+/**
+ * Response of `/api/v2/panel/info/`, available on every Hiddify version
+ * (v11-v14) and used to detect the panel generation before feature calls.
+ */
+@Serializable
+data class PanelInfo(val version: String? = null)
+
+/**
+ * Hiddify API generation boundary.
+ *
+ * The rich Admin V2 REST surface (`users/`, `nodes/`, `settings/`, `apply/`,
+ * `backup/`, ...) and the `__admin_v2_bootstrap` endpoint exist from Hiddify
+ * v13. v11/v12 only expose the smaller commercial REST API v2 (`user/`,
+ * `admin_user/`, `server_status/`, `log/`, ...) under the same base prefix.
+ */
+object PanelCapabilities {
+    const val MIN_MODERN_VERSION = 13
+
+    fun majorVersion(version: String?): Int? =
+        version?.trim()?.substringBefore('.')?.toIntOrNull()
+
+    /** v11/v12 = limited "legacy" API; v13+ = full Admin V2. Unknown versions default to modern. */
+    fun isLegacy(version: String?): Boolean =
+        (majorVersion(version) ?: MIN_MODERN_VERSION) < MIN_MODERN_VERSION
+}
+
 // ---------------------------------------------------------------- Bootstrap
 
 @Serializable

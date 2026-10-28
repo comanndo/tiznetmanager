@@ -35,6 +35,11 @@ class ApplyViewModel(app: Application) : AndroidViewModel(app) {
     private var pollJob: Job? = null
 
     fun loadState() {
+        if (session.isLegacyApi) {
+            _error.value =
+                getApplication<android.app.Application>().getString(com.tiznet.manager.R.string.unsupported_legacy)
+            return
+        }
         viewModelScope.launch {
             runCatching { apiCall { api.applyState() } }
                 .onSuccess { _state.value = it }

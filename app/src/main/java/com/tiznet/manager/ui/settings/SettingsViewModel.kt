@@ -8,6 +8,7 @@ import com.tiznet.manager.data.model.SettingCategory
 import com.tiznet.manager.data.model.SettingsSaveOut
 import com.tiznet.manager.data.remote.ApiException
 import com.tiznet.manager.ui.common.UiState
+import com.tiznet.manager.ui.common.legacyUnsupported
 import com.tiznet.manager.util.apiCall
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,6 +32,10 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
     init { load() }
 
     fun load() {
+        if (session.isLegacyApi) {
+            _state.value = UiState.Error(legacyUnsupported())
+            return
+        }
         viewModelScope.launch {
             _state.value = UiState.Loading
             runCatching { apiCall { session.api().settings().categories } }

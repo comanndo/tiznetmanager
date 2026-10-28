@@ -66,13 +66,14 @@ object PanelAuth {
      */
     fun discoverProxyPath(baseUrl: String): String? {
         val client = bareClient(PanelCookieJar(), followRedirects = false)
-        val request = Request.Builder()
+        // v13+ answers the bootstrap endpoint directly.
+        val bootstrap = Request.Builder()
             .url("${baseUrl.trimEnd('/')}/__admin_v2_bootstrap")
             .header("Accept", "application/json")
             .get()
             .build()
         runCatching {
-            client.newCall(request).execute().use { response ->
+            client.newCall(bootstrap).execute().use { response ->
                 if (response.isSuccessful) {
                     val body = response.body?.string().orEmpty()
                     runCatching {
@@ -80,8 +81,20 @@ object PanelAuth {
                             ?.jsonPrimitive?.content?.takeIf { it.isNotBlank() }
                     }.getOrNull()?.let { return it.trim('/') }
                 }
-                val location = response.header("Location").orEmpty()
-                return parseProxyFromLocation(location)
+                response.header("Location")?.let { return parseProxyFromLocation(it) }
+            }
+        }
+        // v11/v12 have no bootstrap endpoint: the unauthenticated root request is
+        // redirected to /<proxy_path>/ (the sign-in page).
+        val root = Request.Builder()
+            .url("${baseUrl.trimEnd('/')}/")
+            .header("Accept", "text/html,application/json;q=0.9,*/*;q=0.8")
+            .get()
+            .build()
+        runCatching {
+            client.newCall(root).execute().use { response ->
+                parseProxyFromLocation(response.header("Location").orEmpty())
+                    ?.let { return it }
             }
         }
         return null
@@ -117,19 +130,19 @@ object PanelAuth {
                 return Result.Failure(response.code, "login page HTTP ${response.code}")
             }
             val html = response.body?.string().orEmpty()
+            // v13+ forms carry a Flask-WTF CSRF token; v11/v12 forms do not.
             val token = extractCsrf(html)
-                ?: return Result.Failure(-1, "CSRF token not found in login page")
 
-            val form = FormBody.Builder()
-                .add("csrf_token", token)
-                .add("next", "")
+            val form = FormBody.Builder().apply {
+                token?.let { add("csrf_token", it) }
+                add("next", "")
                 // Current Admin V2 login form
-                .add("username", username)
-                .add("password", password)
-                // Legacy (Hiddify <= 10 era) login form
-                .add("secret_textbox", username)
-                .add("password_textbox", password)
-                .build()
+                add("username", username)
+                add("password", password)
+                // Legacy (v11/v12 and older) login form
+                add("secret_textbox", username)
+                add("password_textbox", password)
+            }.build()
 
             val postResponse = runCatching {
                 client.newCall(

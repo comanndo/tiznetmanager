@@ -33,11 +33,19 @@ class UserEditViewModel(app: Application) : AndroidViewModel(app) {
 
     fun load(uuid: String?) {
         viewModelScope.launch {
-            runCatching { apiCall { session.api().users() } }
-                .onSuccess { _outbounds.value = it.outbounds }
+            if (!session.isLegacyApi) {
+                runCatching { apiCall { session.api().users() } }
+                    .onSuccess { _outbounds.value = it.outbounds }
+            }
             if (uuid != null) {
-                runCatching { apiCall { session.api().user(uuid).user } }
-                    .onSuccess { _detail.value = it }
+                runCatching {
+                    if (session.isLegacyApi) {
+                        apiCall { session.api().legacyUser(uuid) }
+                            .let { com.tiznet.manager.data.remote.LegacyMappers.run { it.toDetail() } }
+                    } else {
+                        apiCall { session.api().user(uuid).user }
+                    }
+                }.onSuccess { _detail.value = it }
             }
         }
     }
@@ -63,6 +71,11 @@ class UserEditViewModel(app: Application) : AndroidViewModel(app) {
             }
             runCatching {
                 when {
+                    input.bulk && session.isLegacyApi ->
+                        throw ApiException(
+                            -1,
+                            "ساخت دسته‌ای کاربر فقط روی پنل هیدیفای نسخه ۱۳ به بالا پشتیبانی می‌شود"
+                        )
                     input.bulk -> {
                         val bulkBody = buildJsonObject {
                             // common package fields
@@ -70,6 +83,15 @@ class UserEditViewModel(app: Application) : AndroidViewModel(app) {
                             put("count", input.count.coerceIn(1, 100))
                         }
                         apiCall { session.api().bulkCreateUsers(bulkBody) }
+                    }
+                    session.isLegacyApi -> {
+                        val safe = com.tiznet.manager.data.remote.LegacyMappers
+                            .sanitizeUserBody(body)
+                        if (input.existingUuid != null) {
+                            apiCall { session.api().legacyUpdateUser(input.existingUuid, safe) }
+                        } else {
+                            apiCall { session.api().legacyCreateUser(safe) }
+                        }
                     }
                     input.existingUuid != null ->
                         apiCall { session.api().updateUser(input.existingUuid, body) }

@@ -7,6 +7,7 @@ import com.tiznet.manager.TizNetApp
 import com.tiznet.manager.data.model.Tag
 import com.tiznet.manager.data.remote.ApiException
 import com.tiznet.manager.ui.common.UiState
+import com.tiznet.manager.ui.common.legacyUnsupported
 import com.tiznet.manager.util.apiCall
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +27,10 @@ class TagsViewModel(app: Application) : AndroidViewModel(app) {
     init { load() }
 
     fun load() {
+        if (session.isLegacyApi) {
+            _state.value = UiState.Error(legacyUnsupported())
+            return
+        }
         viewModelScope.launch {
             _state.value = UiState.Loading
             runCatching { apiCall { api.tags().tags } }

@@ -15,7 +15,9 @@ import com.tiznet.manager.data.model.DomainsResponse
 import com.tiznet.manager.data.model.LogChunk
 import com.tiznet.manager.data.model.NodesResponse
 import com.tiznet.manager.data.model.OutboundsResponse
+import com.tiznet.manager.data.model.PanelInfo
 import com.tiznet.manager.data.model.ProtocolSwitches
+import com.tiznet.manager.data.model.UserRow
 import com.tiznet.manager.data.model.RealityState
 import com.tiznet.manager.data.model.ServerStatusResponse
 import com.tiznet.manager.data.model.SettingsResponse
@@ -52,6 +54,51 @@ interface HiddifyApi {
 
     @GET
     suspend fun bootstrap(@Url url: String): BootstrapResponse
+
+    /**
+     * Panel version. Lives under `/api/v2/panel/info/` (outside the admin
+     * prefix), so the full absolute URL is built by RetrofitFactory and
+     * passed in. Available on Hiddify v11 through v14.
+     */
+    @GET
+    suspend fun panelInfo(@Url url: String): PanelInfo
+
+    // ---- Legacy commercial REST API v2 (Hiddify v11/v12) --------------------
+    // These panels predate Admin V2: no bootstrap endpoint and a smaller route
+    // table. Same /api/v2/admin/ base, singular "user/" and "admin_user/".
+
+    @GET("user/")
+    suspend fun legacyUsers(): List<UserRow>
+
+    @GET("user/{uuid}/")
+    suspend fun legacyUser(@Path("uuid") uuid: String): UserRow
+
+    @POST("user/")
+    suspend fun legacyCreateUser(@Body body: JsonObject): UserRow
+
+    @PATCH("user/{uuid}/")
+    suspend fun legacyUpdateUser(
+        @Path("uuid") uuid: String,
+        @Body body: JsonObject
+    ): UserRow
+
+    @DELETE("user/{uuid}/")
+    suspend fun legacyDeleteUser(@Path("uuid") uuid: String): Response<Unit>
+
+    @GET("admin_user/")
+    suspend fun legacyAdmins(): List<AdminInfo>
+
+    @POST("admin_user/")
+    suspend fun legacyCreateAdmin(@Body body: JsonObject): AdminInfo
+
+    @PATCH("admin_user/{uuid}/")
+    suspend fun legacyUpdateAdmin(
+        @Path("uuid") uuid: String,
+        @Body body: JsonObject
+    ): AdminInfo
+
+    @DELETE("admin_user/{uuid}/")
+    suspend fun legacyDeleteAdmin(@Path("uuid") uuid: String): Response<Unit>
 
     @GET("me/")
     suspend fun me(): AdminInfo

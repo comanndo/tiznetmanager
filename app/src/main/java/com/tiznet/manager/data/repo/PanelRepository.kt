@@ -35,11 +35,13 @@ class PanelRepository(
     suspend fun storeVersion(id: Long, version: String?) = dao.updateVersion(id, version)
 
     /**
-     * Verifies credentials against a panel. When [proxyPath] is empty it is
-     * auto-discovered from the unauthenticated bootstrap endpoint/redirect.
-     * The session handshake (form login + cookie) happens inside the API
-     * client's interceptor; here we additionally confirm that the authenticated
-     * admin endpoint accepts the session.
+     * Verifies credentials against a panel.
+     *
+     * Works on every Hiddify generation:
+     *  - v11/v12 have no `__admin_v2_bootstrap`; the proxy path comes from the
+     *    pasted link / a root redirect, and `/api/v2/panel/info/` gives the version.
+     *  - v13+ additionally answer the bootstrap endpoint, used when available.
+     * In all cases `me/` (present on v11-v14) is the proof of authentication.
      */
     suspend fun testConnection(
         baseUrl: String,
@@ -47,23 +49,43 @@ class PanelRepository(
         username: String,
         password: String
     ): BootstrapResponse {
-        val normalized = RetrofitFactory.normalizeBaseUrl(baseUrl)
-        if (!RetrofitFactory.isValidUrl(normalized)) {
+        val (hostBase, embeddedPath) = RetrofitFactory.splitBaseAndPath(baseUrl)
+        if (!RetrofitFactory.isValidUrl(hostBase)) {
             throw ApiException(-1, "آدرس پنل معتبر نیست")
         }
-        val resolvedPath = proxyPath.trim().trim('/').ifBlank {
-            runCatching { PanelAuth.discoverProxyPath(normalized) }.getOrNull().orEmpty()
+        val wantedPath = proxyPath.trim().trim('/').ifBlank { embeddedPath }
+        val resolvedPath = wantedPath.ifBlank {
+            runCatching { PanelAuth.discoverProxyPath(hostBase) }.getOrNull().orEmpty()
         }
-        val (api, _) = RetrofitFactory.apiForTemporary(normalized, resolvedPath, username, password)
-        // A 401 here means the form login (and its fallbacks) rejected the credentials.
-        val bootstrap = apiCall {
-            api.bootstrap(RetrofitFactory.bootstrapUrl(normalized, resolvedPath))
-        }
+        val (api, _) = RetrofitFactory.apiForTemporary(hostBase, resolvedPath, username, password)
+
+        // Version probe exists on v11-v14.
+        val version = runCatching {
+            apiCall {
+                api.panelInfo(RetrofitFactory.panelInfoUrl(hostBase, resolvedPath))
+            }.version
+        }.getOrNull()
+
+        // Authentication proof: 401 (v13+) or 403 (v11/v12) means bad credentials,
+        // 404 means the proxy path/base URL is wrong.
         runCatching { apiCall { api.me() } }.onFailure { e ->
-            if (e is ApiException && (e.isUnauthorized || e.isForbidden)) throw e
+            if (e is ApiException && (e.isUnauthorized || e.isForbidden || e.isNotFound)) {
+                throw if (e.isNotFound && resolvedPath.isBlank()) {
+                    ApiException(404, "مسیر پنل (Proxy Path) پیدا نشد؛ لینک کامل پنل را وارد کنید")
+                } else {
+                    e
+                }
+            }
         }
-        return bootstrap.copy(
-            proxyPath = bootstrap.proxyPath.ifBlank { resolvedPath }
+
+        // Bootstrap is modern-only; never let its 404 fail a legacy connection.
+        val bootstrap = runCatching {
+            apiCall { api.bootstrap(RetrofitFactory.bootstrapUrl(hostBase, resolvedPath)) }
+        }.getOrNull()
+
+        return BootstrapResponse(
+            proxyPath = bootstrap?.proxyPath?.ifBlank { resolvedPath } ?: resolvedPath,
+            panelVersion = version ?: bootstrap?.panelVersion
         )
     }
 

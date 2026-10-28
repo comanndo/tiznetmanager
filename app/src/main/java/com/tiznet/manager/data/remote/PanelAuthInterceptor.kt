@@ -11,12 +11,14 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * Primary path is the browser-compatible form login (session cookie in [jar]).
  * On older panels without that flow, or when the cookie is rejected, the
- * request is retried with HTTP Basic credentials and — for passwordless
- * admins — the Hiddify-API-Key header, which the backend maps to the UUID.
+ * request is retried with HTTP Basic credentials and the Hiddify-API-Key
+ * header, which every Hiddify generation maps to the account UUID.
  *
- * A failed form login is never retried blindly: Hiddify throttles sign-in
- * attempts per IP (10 failures / 15 minutes), so after an explicit failure we
- * go straight to the fallback instead of burning another attempt.
+ * Version quirks handled here:
+ *  - v11/v12 answer failed API authentication with **403**, v13+ with **401**.
+ *  - on v11/v12 the UUID itself is a valid API key even when a password is set.
+ *  - Hiddify throttles sign-in attempts (10 failures / 15 min), so a failed
+ *    form login is never retried blindly.
  */
 class PanelAuthInterceptor(
     private val panel: PanelEntity,
@@ -29,7 +31,7 @@ class PanelAuthInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val loggedIn = ensureSession()
         var response = chain.proceed(chain.request())
-        if (response.code != 401) return response
+        if (response.code !in AUTH_FAILURE_CODES) return response
 
         response.close()
         if (loggedIn) {
@@ -38,10 +40,10 @@ class PanelAuthInterceptor(
             handshakeDone.set(false)
             ensureSession()
             response = chain.proceed(chain.request())
-            if (response.code != 401) return response
+            if (response.code !in AUTH_FAILURE_CODES) return response
             response.close()
         }
-        // Last-resort compatibility paths for older panel builds.
+        // Compatibility paths for older panel builds and passwordless accounts.
         return chain.proceed(fallbackRequest(chain))
     }
 
@@ -62,10 +64,19 @@ class PanelAuthInterceptor(
     private fun fallbackRequest(chain: Interceptor.Chain): okhttp3.Request {
         val builder = chain.request().newBuilder()
             .header("Authorization", Credentials.basic(panel.username, password))
-        if (password.isEmpty()) {
-            // Passwordless admin: the backend accepts the UUID as an API key.
+        // The UUID works as an API key on v11-v14 regardless of the password.
+        if (UUID_REGEX.matches(panel.username.trim())) {
+            builder.header("Hiddify-API-Key", panel.username.trim())
+        } else if (password.isEmpty()) {
             builder.header("Hiddify-API-Key", panel.username)
         }
         return builder.build()
+    }
+
+    companion object {
+        private val AUTH_FAILURE_CODES = setOf(401, 403)
+        private val UUID_REGEX = Regex(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        )
     }
 }
