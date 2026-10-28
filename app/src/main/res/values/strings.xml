@@ -76,7 +76,7 @@
     <string name="login_panel_url">آدرس پنل</string>
     <string name="login_panel_url_hint">https://panel.example.com:Port</string>
     <string name="login_proxy_path">مسیر ادمین (Proxy Path)</string>
-    <string name="login_proxy_path_hint">مثلاً d7x9k2 یا خالی برای تشخیص خودکار</string>
+    <string name="login_proxy_path_hint">مثلاً d7x9k2؛ می‌توانید لینک کامل پنل را در فیلد آدرس بچسبانید یا خالی بگذارید</string>
     <string name="login_username">نام کاربری / یو‌آی‌دی ادمین</string>
     <string name="login_password">رمز عبور</string>
     <string name="login_password_empty_hint">اگر رمز ندارید خالی بگذارید</string>
