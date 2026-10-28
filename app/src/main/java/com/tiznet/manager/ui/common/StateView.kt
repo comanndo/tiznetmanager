@@ -7,9 +7,16 @@ import android.widget.TextView
 import com.google.android.material.button.MaterialButton
 import com.tiznet.manager.R
 
-/** Binds the reusable loading/error/empty include layout. */
+/**
+ * Binds the reusable loading/error/empty include layout.
+ *
+ * Note: when view_state.xml is used through an <include> that carries its own
+ * android:id, the include overrides the root view's id, so the passed [root]
+ * IS the container itself — we must not look up R.id.stateContainer on it
+ * (that returns null and crashes on every screen). Child ids are unaffected.
+ */
 class StateView(private val root: View) {
-    private val container: View = root.findViewById(R.id.stateContainer)
+    private val container: View = root
     private val progress: ProgressBar = root.findViewById(R.id.stateProgress)
     private val loadingText: TextView = root.findViewById(R.id.stateLoadingText)
     private val errorIcon: ImageView = root.findViewById(R.id.stateErrorIcon)
