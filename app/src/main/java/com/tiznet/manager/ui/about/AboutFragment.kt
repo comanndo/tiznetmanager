@@ -10,6 +10,7 @@ import com.tiznet.manager.BuildConfig
 import com.tiznet.manager.R
 import com.tiznet.manager.databinding.FragmentAboutBinding
 import com.tiznet.manager.ui.common.BaseFragment
+import com.tiznet.manager.util.LocaleManager
 
 class AboutFragment : BaseFragment() {
 
@@ -45,6 +46,21 @@ class AboutFragment : BaseFragment() {
             prefs.dynamicColor = checked
             if (checked) DynamicColors.applyToActivityIfAvailable(requireActivity())
             else requireActivity().recreate()
+        }
+
+        when (prefs.language) {
+            LocaleManager.PERSIAN -> binding.chipLangFa.isChecked = true
+            LocaleManager.ENGLISH -> binding.chipLangEn.isChecked = true
+            else -> binding.chipLangSystem.isChecked = true
+        }
+        binding.languageChips.setOnCheckedStateChangeListener { group, _ ->
+            val tag = when (group.checkedChipId) {
+                R.id.chipLangFa -> LocaleManager.PERSIAN
+                R.id.chipLangEn -> LocaleManager.ENGLISH
+                else -> LocaleManager.SYSTEM
+            }
+            prefs.language = tag
+            LocaleManager.apply(tag)
         }
     }
 

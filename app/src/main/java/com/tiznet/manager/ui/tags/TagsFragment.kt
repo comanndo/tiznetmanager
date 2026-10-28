@@ -53,7 +53,14 @@ class TagsFragment : BaseFragment() {
             binding.swipeRefresh.isRefreshing = false
             when (state) {
                 UiState.Loading -> stateView.loading()
-                is UiState.Error -> stateView.error(state.message) { viewModel.load() }
+                is UiState.Error -> stateView.error(
+                    state.message,
+                    onRetry = { if (session.isLegacyApi) openWebAdmin() else viewModel.load() },
+                    retryText = getString(
+                        if (session.isLegacyApi) R.string.unsupported_legacy_open
+                        else R.string.action_retry
+                    )
+                )
                 is UiState.Success -> {
                     stateView.content()
                     adapter.submitList(state.data)

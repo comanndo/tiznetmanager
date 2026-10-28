@@ -57,11 +57,27 @@ class UserDetailViewModel(app: Application) : AndroidViewModel(app) {
     fun toggle(user: UserDetail) =
         patch(user.uuid, buildJsonObject { put("enable", !user.enable) }) { }
 
-    fun resetUsage(user: UserDetail, onDone: (String?) -> Unit) =
+    fun resetUsage(user: UserDetail, onDone: (String?) -> Unit) {
+        if (session.isLegacyApi) {
+            onDone(
+                getApplication<android.app.Application>()
+                    .getString(com.tiznet.manager.R.string.reset_unsupported_legacy)
+            )
+            return
+        }
         patch(user.uuid, buildJsonObject { put("reset_usage", true) }, onDone)
+    }
 
-    fun resetDays(user: UserDetail, onDone: (String?) -> Unit) =
+    fun resetDays(user: UserDetail, onDone: (String?) -> Unit) {
+        if (session.isLegacyApi) {
+            onDone(
+                getApplication<android.app.Application>()
+                    .getString(com.tiznet.manager.R.string.reset_unsupported_legacy)
+            )
+            return
+        }
         patch(user.uuid, buildJsonObject { put("reset_days", true) }, onDone)
+    }
 
     fun delete(uuid: String, onDone: (String?) -> Unit) {
         viewModelScope.launch {

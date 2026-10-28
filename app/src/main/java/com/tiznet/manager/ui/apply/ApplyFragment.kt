@@ -52,7 +52,14 @@ class ApplyFragment : BaseFragment() {
         }
         viewModel.error.collectOnStarted { error ->
             if (!error.isNullOrBlank()) {
-                binding.root.snack(error)
+                if (session.isLegacyApi) {
+                    binding.root.snack(
+                        error,
+                        getString(com.tiznet.manager.R.string.unsupported_legacy_open)
+                    ) { openWebAdmin() }
+                } else {
+                    binding.root.snack(error)
+                }
                 viewModel.consumeError()
             }
         }

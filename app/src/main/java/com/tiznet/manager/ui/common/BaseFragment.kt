@@ -42,4 +42,22 @@ abstract class BaseFragment : Fragment() {
     }
 
     protected fun rootView(): View? = view
+
+    /** Opens the legacy Flask-Admin web UI (used for v11/v12 features without a JSON API). */
+    protected fun openWebAdmin(section: String = "") {
+        val panel = session.activePanel.value ?: return
+        val base = com.tiznet.manager.data.remote.RetrofitFactory.normalizeBaseUrl(panel.baseUrl)
+        val path = panel.proxyPath.trim('/')
+        val url = buildString {
+            append(base)
+            if (path.isNotBlank()) append('/').append(path)
+            append("/admin/")
+            if (section.isNotBlank()) append(section).append('/')
+        }
+        runCatching {
+            startActivity(
+                android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+            )
+        }
+    }
 }

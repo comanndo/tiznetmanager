@@ -30,6 +30,12 @@ class CleanIpFragment : BaseFragment() {
 
         viewModel.reality.collectOnStarted { state ->
             if (state is UiState.Success) bindReality(state.data)
+            if (state is UiState.Error && session.isLegacyApi) {
+                binding.root.snack(
+                    state.message,
+                    getString(R.string.unsupported_legacy_open)
+                ) { openWebAdmin() }
+            }
         }
         viewModel.networks.collectOnStarted { networks ->
             binding.networkList.text = if (networks.isEmpty()) "—"

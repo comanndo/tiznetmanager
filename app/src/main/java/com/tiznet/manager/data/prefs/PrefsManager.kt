@@ -25,6 +25,12 @@ class PrefsManager(context: Context) {
         get() = prefs.getBoolean(KEY_DYNAMIC, true)
         set(value) = prefs.edit().putBoolean(KEY_DYNAMIC, value).apply()
 
+    /** Empty tag means "follow system"; Persian is the app's own default. */
+    var language: String
+        get() = prefs.getString(KEY_LANGUAGE, com.tiznet.manager.util.LocaleManager.PERSIAN)
+            ?: com.tiznet.manager.util.LocaleManager.PERSIAN
+        set(value) = prefs.edit().putString(KEY_LANGUAGE, value).apply()
+
     var showAdvancedSettings: Boolean
         get() = prefs.getBoolean(KEY_ADVANCED, false)
         set(value) = prefs.edit().putBoolean(KEY_ADVANCED, value).apply()
@@ -35,6 +41,7 @@ class PrefsManager(context: Context) {
         private const val KEY_ACTIVE_PANEL = "active_panel_id"
         private const val KEY_THEME = "theme_mode"
         private const val KEY_DYNAMIC = "dynamic_color"
+        private const val KEY_LANGUAGE = "app_language"
         private const val KEY_ADVANCED = "advanced_settings"
     }
 }

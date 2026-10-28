@@ -25,6 +25,7 @@ class TizNetApp : Application() {
         CrashReporter.install(this)
         super.onCreate()
         prefs = PrefsManager(this)
+        com.tiznet.manager.util.LocaleManager.apply(prefs.language)
         AppCompatDelegate.setDefaultNightMode(prefs.themeMode)
         crypto = CryptoManager()
         val dao = AppDatabase.get(this).panelDao()

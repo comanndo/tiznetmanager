@@ -370,4 +370,11 @@
     <string name="crash_share">Share report</string>
     <string name="crash_dismiss">Dismiss</string>
     <string name="unsupported_legacy">This feature requires Hiddify panel v13 or newer; your panel version does not provide this API</string>
+    <string name="unsupported_legacy_open">Open panel in browser</string>
+    <string name="about_language_picker">App language</string>
+    <string name="lang_fa">فارسی</string>
+    <string name="lang_en">English</string>
+    <string name="lang_system">System default</string>
+    <string name="admins_requires_role">Managing admins is restricted to super admins</string>
+    <string name="reset_unsupported_legacy">Usage/day reset is not exposed by the v11 panel API; use the web panel</string>
 </resources>
