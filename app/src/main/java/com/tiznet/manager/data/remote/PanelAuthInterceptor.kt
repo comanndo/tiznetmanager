@@ -13,6 +13,10 @@ import java.util.concurrent.atomic.AtomicBoolean
  * On older panels without that flow, or when the cookie is rejected, the
  * request is retried with HTTP Basic credentials and — for passwordless
  * admins — the Hiddify-API-Key header, which the backend maps to the UUID.
+ *
+ * A failed form login is never retried blindly: Hiddify throttles sign-in
+ * attempts per IP (10 failures / 15 minutes), so after an explicit failure we
+ * go straight to the fallback instead of burning another attempt.
  */
 class PanelAuthInterceptor(
     private val panel: PanelEntity,
@@ -23,36 +27,36 @@ class PanelAuthInterceptor(
     private val handshakeDone = AtomicBoolean(false)
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        ensureSession()
+        val loggedIn = ensureSession()
         var response = chain.proceed(chain.request())
         if (response.code != 401) return response
 
-        // Session expired or rejected: re-handshake once and retry.
         response.close()
-        jar.clear()
-        handshakeDone.set(false)
-        ensureSession()
-        response = chain.proceed(chain.request())
-        if (response.code != 401) return response
-
+        if (loggedIn) {
+            // Cookie existed but was rejected/expired: re-handshake once.
+            jar.clear()
+            handshakeDone.set(false)
+            ensureSession()
+            response = chain.proceed(chain.request())
+            if (response.code != 401) return response
+            response.close()
+        }
         // Last-resort compatibility paths for older panel builds.
-        response.close()
         return chain.proceed(fallbackRequest(chain))
     }
 
     @Synchronized
-    private fun ensureSession() {
-        if (handshakeDone.get()) return
-        PanelAuth.formLogin(
+    private fun ensureSession(): Boolean {
+        if (handshakeDone.get()) return jar.hasSessionCookie()
+        val result = PanelAuth.formLogin(
             baseUrl = panel.baseUrl,
             proxyPath = panel.proxyPath,
             username = panel.username,
             password = password,
             jar = jar
         )
-        // Even on failure we mark the handshake done: request proceeds and the
-        // 401 branch below takes care of the fallback instead of looping.
         handshakeDone.set(true)
+        return result is PanelAuth.Result.Success && jar.hasSessionCookie()
     }
 
     private fun fallbackRequest(chain: Interceptor.Chain): okhttp3.Request {

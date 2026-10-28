@@ -52,13 +52,18 @@ app/src/main/java/com/tiznet/manager
 
 ## 🔐 احراز هویت
 
-هیدیفای ۱۱–۱4 برای درخواست‌های API هدر `Authorization: Basic base64(username:password)` می‌پذیرد
-(در مسیرهای ادمین، `username` همان UUID یا Alias ادمین است). اپ:
+هیدیفای مدرن (۱۱–۱4) احراز هویت فرم‌محور با کوکی session دارد؛ Basic Auth همراه رمز عبور
+در نسخه‌های جدید پذیرفته نمی‌شود (ستون legacy `username` برای ادمین‌ها خالی است و super admin اصلاً آن را ندارد).
+بنابراین اپ دقیقاً مثل مرورگر عمل می‌کند:
 
-1. آدرس پنل و Proxy Path را می‌گیرد (مسیر از `__admin_v2_bootstrap` به‌صورت خودکار تشخیص داده می‌شود)
-2. با همان Basic Auth به `/<proxy_path>/api/v2/admin/me/` درخواست می‌زند تا اعتبارسنجی شود
-3. رمز عبور را با کلید غیرقابل استخراج Android Keystore (AES-256/GCM) رمز کرده و فقط به‌صورت محلی ذخیره می‌کند
-4. ترافیک Cleartext (HTTP) برای پنل‌های شبکه داخلی مجاز است؛ در صورت داشتن دامنه، HTTPS توصیه می‌شود
+1. آدرس پنل و Proxy Path گرفته می‌شود (مسیر خالی با `__admin_v2_bootstrap` یا ریدایرکت لاگین خودکار کشف می‌شود)
+2. صفحه لاگین `/<proxy_path>/` GET و توکن CSRF استخراج می‌شود
+3. فیلدهای `username`/`password` (و نام‌های قدیمی `secret_textbox`/`password_textbox`) POST می‌شوند؛
+   شناسه می‌تواند UUID یا Alias ادمین باشد
+4. کوکی session در یک CookieJar درون‌حافظه‌ای نگه داشته می‌شود و همه درخواست‌های Admin V2 با آن ارسال می‌شوند
+5. روی پاسخ ۴۰۱، handshake یک‌بار تکرار و در پنل‌های قدیمی‌تر به Basic Auth / هدر `Hiddify-API-Key` fallback می‌شود
+6. رمز عبور با کلید غیرقابل استخراج Android Keystore (AES-256/GCM) رمز شده و فقط محلی ذخیره می‌شود
+7. ترافیک Cleartext (HTTP) برای پنل‌های شبکه داخلی مجاز است؛ HTTPS در صورت داشتن دامنه توصیه می‌شود
 
 ## 🔌 نقشه Endpointها
 
