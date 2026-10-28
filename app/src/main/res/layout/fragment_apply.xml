@@ -127,6 +127,9 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <include android:id="@+id/stateView" layout="@layout/view_state" />
+        <include
+            android:id="@+id/stateView"
+            layout="@layout/view_state"
+            android:visibility="gone" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
