@@ -6,6 +6,7 @@ import com.tiznet.manager.data.SessionManager
 import com.tiznet.manager.data.db.AppDatabase
 import com.tiznet.manager.data.prefs.PrefsManager
 import com.tiznet.manager.data.repo.PanelRepository
+import com.tiznet.manager.util.CrashReporter
 import com.tiznet.manager.util.CryptoManager
 
 class TizNetApp : Application() {
@@ -20,6 +21,8 @@ class TizNetApp : Application() {
         private set
 
     override fun onCreate() {
+        // Install before anything else so even initialization failures are recorded.
+        CrashReporter.install(this)
         super.onCreate()
         prefs = PrefsManager(this)
         AppCompatDelegate.setDefaultNightMode(prefs.themeMode)

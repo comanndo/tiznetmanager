@@ -390,4 +390,7 @@
     <string name="content_description_logo">لوگوی هیدیفای</string>
     <string name="content_description_status_dot">نشانگر وضعیت</string>
     <string name="content_description_qr">کیوآر کد لینک اشتراک</string>
+    <string name="crash_dialog_title">گزارش خطای برنامه</string>
+    <string name="crash_share">اشتراک‌گذاری گزارش</string>
+    <string name="crash_dismiss">بستن</string>
 </resources>

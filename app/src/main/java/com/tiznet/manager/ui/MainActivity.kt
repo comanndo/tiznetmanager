@@ -1,9 +1,13 @@
 package com.tiznet.manager.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ScrollView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
@@ -14,12 +18,16 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.tiznet.manager.R
 import com.tiznet.manager.TizNetApp
 import com.tiznet.manager.databinding.ActivityMainBinding
+import com.tiznet.manager.util.CrashReporter
+import com.tiznet.manager.util.dp
 import com.tiznet.manager.util.visible
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,6 +49,22 @@ class MainActivity : AppCompatActivity() {
         val app = application as TizNetApp
         if (app.prefs.dynamicColor) DynamicColors.applyToActivityIfAvailable(this)
         super.onCreate(savedInstanceState)
+
+        // Surface a previous crash BEFORE inflating any app UI: if startup itself is
+        // broken, this dialog still appears and lets the user share the stack trace.
+        if (CrashReporter.hasPendingCrash(this)) {
+            showPendingCrashDialog()
+            return
+        }
+
+        val initialized = runCatching { initializeUi(app) }.onFailure {
+            CrashReporter.recordException(this, it)
+            showPendingCrashDialog()
+        }.isSuccess
+        if (!initialized) return
+    }
+
+    private fun initializeUi(app: TizNetApp) {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -96,6 +120,46 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showPendingCrashDialog() {
+        val trace = CrashReporter.readPendingCrash(this)
+        val textView = TextView(this).apply {
+            text = trace
+            textSize = 11f
+            setTextIsSelectable(true)
+            setPadding(dp(20), dp(12), dp(20), 0)
+        }
+        val scroll = ScrollView(this).apply { addView(textView) }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.crash_dialog_title)
+            .setView(scroll)
+            .setCancelable(false)
+            .setPositiveButton(R.string.crash_share) { _, _ -> shareCrashLog() }
+            .setNegativeButton(R.string.crash_dismiss) { _, _ -> finishAndRemoveTask() }
+            .setOnDismissListener {
+                // Keep the report until it is shared or the dialog is explicitly dismissed.
+                if (!isFinishing) finishAndRemoveTask()
+            }
+            .show()
+    }
+
+    private fun shareCrashLog() {
+        val file: File = CrashReporter.crashFile(this)
+        val uri = FileProvider.getUriForFile(
+            this,
+            "${packageName}.fileprovider",
+            file
+        )
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, "TizNet Manager crash report")
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivity(Intent.createChooser(intent, getString(R.string.crash_share)))
+        CrashReporter.clear(this)
+        finishAndRemoveTask()
+    }
+
     private fun drawerListener() = NavigationView.OnNavigationItemSelectedListener { item ->
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         if (item.itemId == R.id.action_disconnect) {
@@ -126,6 +190,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        if (!::binding.isInitialized) {
+            super.onBackPressed()
+            return
+        }
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else {
